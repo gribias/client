@@ -5,10 +5,9 @@ import { Box, Container, Typography } from "@mui/material";
 import { ThemedTitle } from "@refinedev/mui";
 
 import { CredentialResponse } from "../interfaces/google";
+import { yariga } from "assets";
 
-// Todo: Update your Google Client ID here
-const GOOGLE_CLIENT_ID =
-  "1041339102270-jlljcjl19jo1hkgf695em3ibr7q2m734.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 export const Login: React.FC = () => {
   const { mutate: login } = useLogin<CredentialResponse>();
@@ -59,13 +58,9 @@ export const Login: React.FC = () => {
         justifyContent="center"
         flexDirection="column"
       >
-        <ThemedTitle
-          collapsed={false}
-          wrapperStyles={{
-            fontSize: "22px",
-            justifyContent: "center",
-          }}
-        />
+        <div>
+          <img src={yariga} alt="logo"/>
+        </div>
 
         <GoogleButton />
 

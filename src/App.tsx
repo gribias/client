@@ -1,6 +1,5 @@
 import {
   Refine,
-  GitHubBanner,
   WelcomePage,
   Authenticated,
   AuthBindings,
@@ -38,9 +37,33 @@ import {
 } from "pages/categories";
 import { ColorModeContextProvider } from "./contexts/color-mode";
 import { Header } from "./components/header";
-import { Login } from "pages/login";
+import { 
+  Login,
+  // MyProfile,
+  // ProductDetails,
+  // Orders,
+  // CreateProduct,
+  // EditProduct,
+
+} from "pages/login";
+import Home from "pages/Home";
 import { CredentialResponse } from "interfaces/google";
 import { parseJwt } from "utils/parse-jwt";
+
+import { MuiInferencer } from "@refinedev/inferencer/mui";
+import { ProductCreate, ProductEdit, ProductList, ProductShow } from "pages/products";
+
+//All Products
+
+import  Allproducts  from 'pages/allproducts'
+
+// icons
+
+import {
+  ShoppingBagOutlined,
+  Dashboard
+
+} from '@mui/icons-material';
 
 const axiosInstance = axios.create();
 axiosInstance.interceptors.request.use((request: AxiosRequestConfig) => {
@@ -60,13 +83,28 @@ function App() {
   const authProvider: AuthBindings = {
     login: async ({ credential }: CredentialResponse) => {
       const profileObj = credential ? parseJwt(credential) : null;
+// save user to mongodb...
+      if(profileObj){
+        const response = await fetch('http://localhost:8080/api/v1/users', {
+          method: 'Post',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            name: profileObj.name,
+            email: profileObj.email,
+            avatar: profileObj.picture,
+          })
+        }) 
 
-      if (profileObj) {
+        const data = await response.json();
+        if(response.status === 200) {
+
+       
         localStorage.setItem(
           "user",
           JSON.stringify({
             ...profileObj,
             avatar: profileObj.picture,
+            userid: data._id
           })
         );
 
@@ -76,6 +114,7 @@ function App() {
           success: true,
           redirectTo: "/",
         };
+      }
       }
 
       return {
@@ -132,18 +171,34 @@ function App() {
 
   return (
     <BrowserRouter>
-      <GitHubBanner />
       <RefineKbarProvider>
         <ColorModeContextProvider>
           <CssBaseline />
           <GlobalStyles styles={{ html: { WebkitFontSmoothing: "auto" } }} />
           <RefineSnackbarProvider>
             <Refine
-              dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
+              dataProvider={dataProvider("http://localhost:8080/api/v1")}
               notificationProvider={notificationProvider}
               routerProvider={routerBindings}
               authProvider={authProvider}
               resources={[
+                // {
+                //   name: "dashboard",
+                //   list: Allproducts,
+                //   icon: <Dashboard />
+                  
+                // },
+                {
+                  name: "products",
+                  list: Allproducts,
+                  create: "/products/create",
+                  edit: "/products/edit/:id",
+                  show: "/products/show/:id",
+                  icon: <ShoppingBagOutlined />,
+                  meta: {
+                    canDelete: true,
+                  },
+                },
                 {
                   name: "blog_posts",
                   list: "/blog-posts",
@@ -182,7 +237,7 @@ function App() {
                 >
                   <Route
                     index
-                    element={<NavigateToResource resource="blog_posts" />}
+                    element={<NavigateToResource resource="dashboard" />}
                   />
                   <Route path="/blog-posts">
                     <Route index element={<BlogPostList />} />
@@ -195,6 +250,12 @@ function App() {
                     <Route path="create" element={<CategoryCreate />} />
                     <Route path="edit/:id" element={<CategoryEdit />} />
                     <Route path="show/:id" element={<CategoryShow />} />
+                  </Route>
+                  <Route path="/products">
+                  <Route index element = {<ProductList />} />
+                  <Route path="create" element={<ProductCreate />} />
+                  <Route path="edit/:id" element={<ProductEdit />} />
+                  <Route path="show/:id" element={<ProductShow />} />  
                   </Route>
                 </Route>
                 <Route
