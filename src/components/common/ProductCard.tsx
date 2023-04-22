@@ -15,7 +15,7 @@ import { PropertyCardProps } from "interfaces/property";
 
 import React, { useState } from "react";
 
-import { useBasketContext } from "hooks/useBasketContext";
+
 
 const ProductCard = ({
     id,
@@ -24,20 +24,9 @@ const ProductCard = ({
     cost,
     photo,
 }: PropertyCardProps) => {
-    const  { dispatch }   = useBasketContext();
-    const  basketState  = useBasketContext();
     const [amount, setAmount] = useState(1);
   
 
-    const handleIncrement = () => {
-        setAmount(amount + 1);
-    };
-
-    const handleDecrement = () => {
-        if (amount > 1) {
-            setAmount(amount - 1);
-        }
-    };
 
     return (
         <Card
@@ -106,21 +95,7 @@ const ProductCard = ({
             </CardContent>
             <Stack direction="row" gap={1} alignItems="flex-end" sx={{ml: "auto"}}>
                     <NumberInput value={amount} setValue={setAmount}  />
-                    <button
-                        className="transition-all hover:bg-gray-50 active:scale-95"
-                        onClick={() =>{
-                            console.log("Before dispatch: ", basketState);
-                            console.log(dispatch)
-                            dispatch({
-                                type: "addProduct",
-                                payload: { productid: id, amount },
-                            })
-                            console.log("After dispatch: ", basketState);
-                        }
-                        }
-                    >
-                        <AddShoppingCartOutlinedIcon className="text-primary h-6 w-6" />
-                    </button>
+            
                 </Stack>
         </Card>
     );

@@ -11,7 +11,6 @@ import {
 import { RefineThemedLayoutHeaderProps } from "@refinedev/mui";
 import { DarkModeOutlined, LightModeOutlined, Menu } from "@mui/icons-material";
 import ShoppingCartCheckoutOutlinedIcon from '@mui/icons-material/ShoppingCartCheckoutOutlined';
-import { useBasketContext, useOrdersModalContext } from "../../hooks/index";
 
 import { ColorModeContext } from "../../contexts/color-mode";
 
@@ -32,9 +31,8 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
 
   const hasSidebarToggle = Boolean(onToggleSiderClick);
 
-  const { setOrdersModalVisible } = useOrdersModalContext();
-  const { orders, totalPrice } = useBasketContext();
-  const isBasketHaveOrders = orders.length > 0;
+
+ 
 
   return (
     <AppBar position="sticky">
@@ -76,24 +74,7 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
               {mode === "dark" ? <LightModeOutlined /> : <DarkModeOutlined />}
             </IconButton>
 
-            <div
-                    className="flex cursor-pointer items-center gap-2"
-                    onClick={() =>{
-                        setOrdersModalVisible((prev: boolean) => !prev)
-                        console.log('click')
-                    }
-                    }
-                >
-                    {isBasketHaveOrders && (
-                        <div className="text-lg font-semibold text-white">
-                            {isBasketHaveOrders && `${orders.length} items /`}{" "}
-                            <span className="text-xl font-extrabold">
-                                ${totalPrice / 100}
-                            </span>
-                        </div>
-                    )}
-<ShoppingCartCheckoutOutlinedIcon />
-</div>
+  
             {(user?.avatar || user?.name) && (
               <Stack
                 direction="row"
