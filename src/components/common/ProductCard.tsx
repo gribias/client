@@ -9,11 +9,13 @@ import {
     CardMedia,
     CardContent,
     Stack,
+    Button,
 } from "@mui/material";
 
 import { PropertyCardProps } from "interfaces/property";
+import CartContext from "../../contexts/Cart/CartContext";
 
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 
 
 
@@ -25,7 +27,15 @@ const ProductCard = ({
     photo,
 }: PropertyCardProps) => {
     const [amount, setAmount] = useState(1);
-  
+    //@ts-ignore
+    const { addToCart, increase, cartItems, sumItems, itemCount } = useContext(CartContext);
+
+      //Check whether the product is in the cart or not
+       //@ts-ignore
+  const isInCart = (product) => {
+     //@ts-ignore
+    return !!cartItems.find((item) => item.id === product.id);
+  };
 
 
     return (
@@ -94,8 +104,45 @@ const ProductCard = ({
                 
             </CardContent>
             <Stack direction="row" gap={1} alignItems="flex-end" sx={{ml: "auto"}}>
-                    <NumberInput value={amount} setValue={setAmount}  />
-            
+                    {/* <NumberInput value={amount} setValue={setAmount}  /> */}
+                    {isInCart({id,
+    reference,
+    material,
+    cost,
+    photo,}) && (
+          <Button
+            onClick={() => {
+                console.log({id,
+                    reference,
+                    material,
+                    cost,
+                    photo,})
+              increase({id,
+                reference,
+                material,
+                cost,
+                photo,});
+            }}
+            className="btn"
+          >
+            Add More
+          </Button>
+        )}
+         {!isInCart({id,
+    reference,
+    material,
+    cost,
+    photo,}) && (
+          <Button onClick={() => addToCart({id,
+            reference,
+            material,
+            cost,
+            photo,})}>  <AddShoppingCartOutlinedIcon /> Add to Cart</Button>
+        )}
+                    <Button>
+                   
+                    </Button>
+                   
                 </Stack>
         </Card>
     );

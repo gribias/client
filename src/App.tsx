@@ -57,6 +57,8 @@ import { ProductCreate, ProductEdit, ProductList, ProductShow } from "pages/prod
 
 import  Allproducts  from 'pages/allproducts'
 
+
+
 // icons
 
 import {
@@ -225,6 +227,7 @@ function App() {
                 warnWhenUnsavedChanges: true,
               }}
             >
+             
               <Routes>
                 <Route
                   element={
@@ -279,7 +282,7 @@ function App() {
                   <Route path="*" element={<ErrorComponent />} />
                 </Route>
               </Routes>
-
+             
               <RefineKbar />
               <UnsavedChangesNotifier />
             </Refine>

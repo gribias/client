@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useGetIdentity } from "@refinedev/core";
 import {
   AppBar,
@@ -13,6 +13,10 @@ import { DarkModeOutlined, LightModeOutlined, Menu } from "@mui/icons-material";
 import ShoppingCartCheckoutOutlinedIcon from '@mui/icons-material/ShoppingCartCheckoutOutlined';
 
 import { ColorModeContext } from "../../contexts/color-mode";
+
+import CartContext from "contexts/Cart/CartContext";
+import { typography } from "@mui/system";
+
 
 type IUser = {
   id: number;
@@ -31,8 +35,10 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
 
   const hasSidebarToggle = Boolean(onToggleSiderClick);
 
-
- 
+  const [toggle, setToggle] = useState(false);
+  // Extract itemscount from CartContext
+  //@ts-ignore
+  const { cartItems } = useContext(CartContext);
 
   return (
     <AppBar position="sticky">
@@ -73,6 +79,24 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
             >
               {mode === "dark" ? <LightModeOutlined /> : <DarkModeOutlined />}
             </IconButton>
+            <div
+            onClick={() => {
+              console.log(toggle)
+              setToggle(!toggle) }}
+            >
+            {cartItems.length > 0 && (
+                 <Stack
+                 direction="row"
+                 >
+                  <Typography>{cartItems.length}</Typography>
+                  <ShoppingCartCheckoutOutlinedIcon />
+                  </Stack>
+            )}
+            
+           
+            
+            </div>
+          
 
   
             {(user?.avatar || user?.name) && (
