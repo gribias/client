@@ -1,102 +1,139 @@
-import { useRef } from "react";
-import { useCreate, useGo } from "@refinedev/core";
-
 import {
-    useBasketContext,
-    useOrdersModalContext,
-    useOnClickOutside,
-} from "../../hooks/index";
+    Modal,
+    Backdrop,
+    Box,
+    Button,
+    Card,
+    CardContent,
+    Divider,
+    Typography,
+    Stack,
+    Drawer
+  } from "@mui/material";
+  import { styled } from '@mui/material/styles';
+  import Paper from '@mui/material/Paper';
+  import ControlPointOutlinedIcon from '@mui/icons-material/ControlPointOutlined';
+  
+  import CartContext from "contexts/Cart/CartContext";
+  import React, { useContext } from "react";
+  //import { ICart } from "../../interfaces/cart";
 
-import { OrderModalProductItem } from "./orderModalProductItem";
-import { IOrder } from "../../interfaces/property";
+  interface OrdersModalProps {
+    open: boolean;
+    onClose: () => void;
+  }
 
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
-import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
+  
+  export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose , open}) => {
 
-export const OrdersModal: React.FC = () => {
-    const ref = useRef(null);
-    const go = useGo();
-    const { setOrdersModalVisible } = useOrdersModalContext();
-    const { orders, totalPrice, products, dispatch } = useBasketContext();
-    const { mutate } = useCreate<IOrder>();
-
-    const handleClickOutside = () => {
-        setOrdersModalVisible(false);
+    //ts-ignore
+    const { cartItems, clearCart, increase} = useContext(CartContext);
+  
+    const handleCheckout = () => {
+      // Implement the checkout process here
+      console.log("Checkout process initiated");
     };
-    useOnClickOutside(ref, handleClickOutside);
 
+    const Item = styled(Paper)(({ theme }) => ({
+        backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+        ...theme.typography.body2,
+        padding: theme.spacing(1),
+        textAlign: 'center',
+        color: theme.palette.text.secondary,
+      }));
+  
     return (
-        <>
-            <div className="fixed inset-0 z-50 bg-black opacity-40"></div>
-            <div className="fixed inset-0 z-50 flex items-center">
-                <div
-                    ref={ref}
-                    className="mx-auto max-h-[95%] w-[500px] overflow-auto rounded-lg bg-white shadow-lg"
+      <Modal open={open} onClose={onClose} BackdropComponent={Backdrop} >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "white",
+            borderRadius: "8px",
+            boxShadow: 24,
+            p: 4,
+            minWidth: "300px",
+            maxWidth: "800px",
+            maxHeight: "80vh",
+            overflow: "auto",
+          }}
+        >
+          <Card>
+            <CardContent>
+              <Typography variant="h5" mb={2}>
+                Encomenda
+              </Typography>
+              {/* //@ts-ignore */}
+              <Stack
+                spacing={2}
+                direction="column"
+              >
+                
+              {cartItems.map((item: any) => (
+        
+              <Stack spacing={2}
+              key={item.id}
+              direction="row"
+              >
+                <Stack
+                 direction={{ xs: 'column', sm: 'row' }}
+                 spacing={{ xs: 1, sm: 2, md: 4 }}
+                 justifyContent="flex-end"
+                alignItems="center"
                 >
-                    <div className="bg-primary relative p-2">
-                        <button
-                            className="absolute right-2 top-2 p-1 transition-all hover:bg-orange-500 active:scale-90"
-                            onClick={() => setOrdersModalVisible(false)}
-                        >
-                            <CloseOutlinedIcon className="h-6 w-6 text-white" />
-                        </button>
-                        <CreateNewFolderOutlinedIcon />
-                    </div>
-                    <div className="p-4">
-                        <div className="flex flex-col gap-2">
-                            {orders.length ? (
-                                orders.map((order, index) => (
-                                    <OrderModalProductItem
-                                        key={index}
-                                        order={order}
-                                    />
-                                ))
-                            ) : (
-                                <p className="flex h-48 items-center justify-center text-xl font-bold text-gray-500">
-                                    No have any items.
-                                </p>
-                            )}
-                        </div>
-                        <div className="mt-2 flex flex-col items-end gap-2">
-                            <div className="flex items-center justify-center gap-2">
-                                Total:
-                                <span className="text-lg font-bold text-gray-800">
-                                    {orders.length} items / ${totalPrice / 100}
-                                </span>
-                            </div>
-                            <button
-                                onClick={() =>
-                                    mutate(
-                                        {
-                                            resource: "orders",
-                                            values: {
-                                                products,
-                                                amount: totalPrice,
-                                            },
-                                            successNotification: false,
-                                        },
-                                        {
-                                            onSuccess: (data) => {
-                                                go({
-                                                    to: `/order/${data.data.id}`,
-                                                    type: "replace",
-                                                });
-                                                setOrdersModalVisible(false);
-                                                dispatch({
-                                                    type: "resetBasket",
-                                                });
-                                            },
-                                        },
-                                    )
-                                }
-                                className="bg-primary border-primary rounded-md border px-4 text-lg font-bold text-white transition-all hover:bg-orange-500 active:scale-95"
-                            >
-                                Order
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
+                <img src={item.photo} alt={item?.reference} width="100px" />
+                  <Typography variant="subtitle1"></Typography>
+                  <Stack  direction="column">
+                  <Typography display="block" fontWeight="bold"> {item?.reference}</Typography>
+                  <Typography variant="body1"> €{item.cost}
+          { item.quantity && item.quantity > 1 &&  " x " + item.quantity }
+          </Typography>
+                  
+                  </Stack>
+                 
+                  <ControlPointOutlinedIcon 
+                   onClick={() => increase(item)}
+                  />
+                  <Typography display="block"> €{ item.quantity && item.quantity > 1 && (item.quantity * item.cost) }</Typography>
+                  
+                  <Divider sx={{ my: 2 }} />
+                </Stack>
+                </Stack>
+              
+              ))}
+              </Stack>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                  mt: 2,
+                }}
+              >
+                <Typography variant="h6" sx={{ mr: 2 }}>
+                  Total: €{cartItems.reduce(
+                    //@ts-ignore
+                    (total, item) => total + item.cost * item.quantity,
+                    0
+                  )}
+                </Typography>
+                <Button variant="contained" onClick={handleCheckout}>
+                  Checkout
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
+          <Button
+            variant="contained"
+            onClick={clearCart}
+            sx={{ mt: 2 }}
+          >
+            Clear Cart
+          </Button>
+        </Box>
+      </Modal>
     );
-};
+  };
+  

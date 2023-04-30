@@ -27,6 +27,16 @@ export interface PropertyProps {
     creator: string
 }
 
+export interface PropertyProps {
+    _id: string,
+    title: string,
+    description: string,
+    location: string,
+    price: string,
+    photo: string,
+    creator: string
+}
+
 export interface FormProps {
     type: string,
     register: any,

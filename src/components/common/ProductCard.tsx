@@ -1,6 +1,5 @@
 import WidgetsRoundedIcon from '@mui/icons-material/WidgetsRounded';
 import AddShoppingCartOutlinedIcon from '@mui/icons-material/AddShoppingCartOutlined';
-import {NumberInput} from 'components/common/numberInput'
 import { Link } from "react-router-dom";
 import {
     Typography,
@@ -9,13 +8,15 @@ import {
     CardMedia,
     CardContent,
     Stack,
+    Button,
 } from "@mui/material";
 
 import { PropertyCardProps } from "interfaces/property";
+import CartContext from "../../contexts/Cart/CartContext";
 
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 
-import { useBasketContext } from "hooks/useBasketContext";
+
 
 const ProductCard = ({
     id,
@@ -24,20 +25,18 @@ const ProductCard = ({
     cost,
     photo,
 }: PropertyCardProps) => {
-    const  { dispatch }   = useBasketContext();
-    const  basketState  = useBasketContext();
-    const [amount, setAmount] = useState(1);
-  
+    const [amount, setAmount] = useState(0);
+    //@ts-ignore
+    const { addToCart, increase, cartItems, sumItems, itemCount } = useContext(CartContext);
+    
 
-    const handleIncrement = () => {
-        setAmount(amount + 1);
-    };
+      //Check whether the product is in the cart or not
+       //@ts-ignore
+  const isInCart = (product) => {
+     //@ts-ignore
+    return !!cartItems.find((item) => item.id === product.id);
+  };
 
-    const handleDecrement = () => {
-        if (amount > 1) {
-            setAmount(amount - 1);
-        }
-    };
 
     return (
         <Card
@@ -105,22 +104,40 @@ const ProductCard = ({
                 
             </CardContent>
             <Stack direction="row" gap={1} alignItems="flex-end" sx={{ml: "auto"}}>
-                    <NumberInput value={amount} setValue={setAmount}  />
-                    <button
-                        className="transition-all hover:bg-gray-50 active:scale-95"
-                        onClick={() =>{
-                            console.log("Before dispatch: ", basketState);
-                            console.log(dispatch)
-                            dispatch({
-                                type: "addProduct",
-                                payload: { productid: id, amount },
-                            })
-                            console.log("After dispatch: ", basketState);
-                        }
-                        }
-                    >
-                        <AddShoppingCartOutlinedIcon className="text-primary h-6 w-6" />
-                    </button>
+                    {/* <NumberInput value={amount} setValue={setAmount}  /> */}
+                    {isInCart({id,
+    reference,
+    material,
+    cost,
+    photo,}) && (
+          <Button
+            onClick={() => {
+              increase({id,
+                reference,
+                material,
+                cost,
+                photo,});
+            }}
+            className="btn"
+          >
+            Adicionar mais
+          </Button>
+        )}
+         {!isInCart({id,
+    reference,
+    material,
+    cost,
+    photo,}) && (
+          <Button onClick={() => addToCart({id,
+            reference,
+            material,
+            cost,
+            photo,})}>  <AddShoppingCartOutlinedIcon /> Encomendar</Button>
+        )}
+                    <Button>
+                   
+                    </Button>
+                   
                 </Stack>
         </Card>
     );
