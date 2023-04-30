@@ -26,6 +26,7 @@ const Storage = (cartItems) => {
       (total, product) => total + product.quantity,
       0
     );
+    console.log("itemCount: ", itemCount);
     let total = cartItems
       .reduce((total, product) => total + product.cost * product.quantity, 0)
       .toFixed(2);
@@ -38,18 +39,27 @@ const Storage = (cartItems) => {
     switch (action.type) {
       // If the action type is ADD_TO_CART, we want to add the item to the cartItems array
       case ADD_TO_CART:
-        if (!state.cartItems.find((item) => item.id === action.payload.id)) {
-          state.cartItems.push({
-            ...action.payload,
-            quantity: 1,
-          });
-        }
-  
-        return {
-          ...state,
-          ...sumItems(state.cartItems),
-          cartItems: [...state.cartItems],
-        };
+  const existingItemIndex = state.cartItems.findIndex(item => item.id === action.payload.id);
+  if (existingItemIndex !== -1) {
+    const existingItem = state.cartItems[existingItemIndex];
+    const updatedItem = {
+      ...existingItem,
+      quantity: existingItem.quantity + 1
+    };
+    const updatedCartItems = [      ...state.cartItems.slice(0, existingItemIndex),      updatedItem,      ...state.cartItems.slice(existingItemIndex + 1)    ];
+    return {
+      ...state,
+      ...sumItems(updatedCartItems),
+      cartItems: updatedCartItems
+    };
+  } else {
+    return {
+      ...state,
+      ...sumItems([...state.cartItems, { ...action.payload, quantity: 1 }]),
+      cartItems: [...state.cartItems, { ...action.payload, quantity: 1 }]
+    };
+  }
+
   
       // If the action type is REMOVE_ITEM, we want to remove the item from the cartItems array
       case REMOVE_ITEM:
@@ -65,13 +75,21 @@ const Storage = (cartItems) => {
   
       // If the action type is INCREASE, we want to increase the quantity of the particular item in the cartItems array
       case INCREASE:
-        state.cartItems[
-          state.cartItems.findIndex((item) => item.id === action.payload.id)
-        ].quantity++;
+        const index = state.cartItems.findIndex((item) => item.id === action.payload.id);
+        const updatedItem = {
+          ...state.cartItems[index],
+          quantity: state.cartItems[index].quantity + 1
+        };
+        const updatedCartItems = [
+          ...state.cartItems.slice(0, index),
+          updatedItem,
+          ...state.cartItems.slice(index + 1)
+        ];
+        
         return {
           ...state,
-          ...sumItems(state.cartItems),
-          cartItems: [...state.cartItems],
+          ...sumItems(updatedCartItems),
+          cartItems: updatedCartItems
         };
   
       // If the action type is DECREASE, we want to decrease the quantity of the particular item in the cartItems array

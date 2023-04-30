@@ -7,7 +7,10 @@ import {
   Stack,
   Toolbar,
   Typography,
+  Badge,
+  BadgeProps,
 } from "@mui/material";
+import { styled } from '@mui/material/styles';
 import { RefineThemedLayoutHeaderProps } from "@refinedev/mui";
 import { DarkModeOutlined, LightModeOutlined, Menu } from "@mui/icons-material";
 import ShoppingCartCheckoutOutlinedIcon from '@mui/icons-material/ShoppingCartCheckoutOutlined';
@@ -16,6 +19,7 @@ import { ColorModeContext } from "../../contexts/color-mode";
 
 import CartContext from "contexts/Cart/CartContext";
 import { typography } from "@mui/system";
+import { OrdersModal } from '../../components/common/ordersModal';
 
 
 type IUser = {
@@ -39,6 +43,24 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
   // Extract itemscount from CartContext
   //@ts-ignore
   const { cartItems } = useContext(CartContext);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleClickOpen = () => {
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
+
+  const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
+    '& .MuiBadge-badge': {
+      right: -3,
+      top: 10,
+      border: `2px solid ${theme.palette.background.paper}`,
+      padding: '0 4px',
+    },
+  }));
 
   return (
     <AppBar position="sticky">
@@ -71,25 +93,28 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
             justifyContent="flex-end"
             alignItems="center"
           >
-            <IconButton
+            {/* <IconButton
               color="inherit"
               onClick={() => {
                 setMode();
               }}
             >
               {mode === "dark" ? <LightModeOutlined /> : <DarkModeOutlined />}
-            </IconButton>
+            </IconButton> */}
             <div
-            onClick={() => {
-              console.log(toggle)
-              setToggle(!toggle) }}
+            onClick={handleClickOpen}
             >
+   {/* Show the modal if showModal is true */}
+   { <OrdersModal onClose={handleModalClose} open={showModal} />}
             {cartItems.length > 0 && (
                  <Stack
                  direction="row"
                  >
-                  <Typography>{cartItems.length}</Typography>
-                  <ShoppingCartCheckoutOutlinedIcon />
+                  <IconButton aria-label="cart">
+      <StyledBadge badgeContent={cartItems.length} color="secondary">
+        <ShoppingCartCheckoutOutlinedIcon />
+      </StyledBadge>
+    </IconButton>
                   </Stack>
             )}
             

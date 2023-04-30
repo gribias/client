@@ -11,14 +11,14 @@ export interface FormValues {
     propertyType: string,
     grams:number,
     material: string,
-    cost: number | undefined,
+    cost: number ,
 }
 
 export interface PropertyCardProps {
   id?: BaseKey | undefined,
   reference: string,
   material: string,
-  cost?: number,
+  cost: number,
   photo: string,
 }
 

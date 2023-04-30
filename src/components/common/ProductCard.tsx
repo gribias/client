@@ -1,6 +1,5 @@
 import WidgetsRoundedIcon from '@mui/icons-material/WidgetsRounded';
 import AddShoppingCartOutlinedIcon from '@mui/icons-material/AddShoppingCartOutlined';
-import {NumberInput} from 'components/common/numberInput'
 import { Link } from "react-router-dom";
 import {
     Typography,
@@ -26,9 +25,10 @@ const ProductCard = ({
     cost,
     photo,
 }: PropertyCardProps) => {
-    const [amount, setAmount] = useState(1);
+    const [amount, setAmount] = useState(0);
     //@ts-ignore
     const { addToCart, increase, cartItems, sumItems, itemCount } = useContext(CartContext);
+    
 
       //Check whether the product is in the cart or not
        //@ts-ignore
@@ -112,11 +112,6 @@ const ProductCard = ({
     photo,}) && (
           <Button
             onClick={() => {
-                console.log({id,
-                    reference,
-                    material,
-                    cost,
-                    photo,})
               increase({id,
                 reference,
                 material,
@@ -125,7 +120,7 @@ const ProductCard = ({
             }}
             className="btn"
           >
-            Add More
+            Adicionar mais
           </Button>
         )}
          {!isInCart({id,
@@ -137,7 +132,7 @@ const ProductCard = ({
             reference,
             material,
             cost,
-            photo,})}>  <AddShoppingCartOutlinedIcon /> Add to Cart</Button>
+            photo,})}>  <AddShoppingCartOutlinedIcon /> Encomendar</Button>
         )}
                     <Button>
                    

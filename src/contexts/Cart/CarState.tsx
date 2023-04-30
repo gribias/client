@@ -15,6 +15,7 @@ const CartState = ({ children }) => {
     cartItems: storage,
     ...sumItems(storage),
     checkout: false,
+    showCart: false, // Add this line
   };
   //Set up the reducer
   const [state, dispatch] = useReducer(CartReducer, initialState);
