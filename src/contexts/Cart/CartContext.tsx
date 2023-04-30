@@ -6,6 +6,7 @@ interface ICartContext {
   cartItems: [];
   clearCart: () => void;
   increase: (payload: any) => void;
+  itemCount: [];
   
   // add any other properties or methods that you expect to use
 }

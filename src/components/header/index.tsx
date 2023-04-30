@@ -42,7 +42,7 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
   const [toggle, setToggle] = useState(false);
   // Extract itemscount from CartContext
   //@ts-ignore
-  const { cartItems } = useContext(CartContext);
+  const { cartItems, itemCount } = useContext(CartContext);
   const [showModal, setShowModal] = useState(false);
 
   const handleClickOpen = () => {
@@ -111,7 +111,7 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
                  direction="row"
                  >
                   <IconButton aria-label="cart">
-      <StyledBadge badgeContent={cartItems.length} color="secondary">
+      <StyledBadge badgeContent={itemCount} color="secondary">
         <ShoppingCartCheckoutOutlinedIcon />
       </StyledBadge>
     </IconButton>

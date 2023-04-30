@@ -27,7 +27,7 @@ import {
   export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose , open}) => {
 
     //ts-ignore
-    const { cartItems, clearCart, increase} = useContext(CartContext);
+    const { cartItems, clearCart, increase,itemCount} = useContext(CartContext);
   
     const handleCheckout = () => {
       // Implement the checkout process here
@@ -66,23 +66,27 @@ import {
                 Encomenda
               </Typography>
               {/* //@ts-ignore */}
+          
               <Stack
                 spacing={2}
                 direction="column"
               >
                 
               {cartItems.map((item: any) => (
-        
+                <>
+                
+                <Divider variant="inset"  />
               <Stack spacing={2}
               key={item.id}
               direction="row"
-              >
+              >    
+              
                 <Stack
                  direction={{ xs: 'column', sm: 'row' }}
                  spacing={{ xs: 1, sm: 2, md: 4 }}
                  justifyContent="flex-end"
                 alignItems="center"
-                >
+                >  
                 <img src={item.photo} alt={item?.reference} width="100px" />
                   <Typography variant="subtitle1"></Typography>
                   <Stack  direction="column">
@@ -101,7 +105,7 @@ import {
                   <Divider sx={{ my: 2 }} />
                 </Stack>
                 </Stack>
-              
+                </>
               ))}
               </Stack>
               <Box
@@ -112,6 +116,9 @@ import {
                   mt: 2,
                 }}
               >
+                <Typography variant="h6" sx={{ mr: 2 }}>
+                  total de unidades: {itemCount}
+                </Typography>
                 <Typography variant="h6" sx={{ mr: 2 }}>
                   Total: €{cartItems.reduce(
                     //@ts-ignore
