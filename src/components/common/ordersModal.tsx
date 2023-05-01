@@ -16,6 +16,7 @@ import {
   
   import CartContext from "contexts/Cart/CartContext";
   import React, { useContext } from "react";
+  import { useGetIdentity } from "@refinedev/core";
   //import { ICart } from "../../interfaces/cart";
 
   interface OrdersModalProps {
@@ -25,13 +26,39 @@ import {
 
   
   export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose , open}) => {
+    const {data: user} = useGetIdentity<{
+      email:string
+    }>();
 
     //ts-ignore
-    const { cartItems, clearCart, increase,itemCount} = useContext(CartContext);
+    const { cartItems, clearCart, increase,itemCount, handleCheckout} = useContext(CartContext);
   
-    const handleCheckout = () => {
-      // Implement the checkout process here
-      console.log("Checkout process initiated");
+   const checkout = (cartItems: any) => {
+    console.log(cartItems)
+      return async () => {
+
+     
+    
+        //cartItems.push({email: user?.email??''})
+        // Make API call to save cart items to database
+        const response = await fetch('http://localhost:8080/api/v1/orders', {
+          method: 'POST',
+          body: JSON.stringify({ cartItems,
+          email: user?.email??'',
+          NumberArticles: itemCount,
+          Total: cartItems.reduce( (total: number, item: { cost: number; quantity: number; }) => total + item.cost * item.quantity,0),
+          
+        }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+    
+        if (response.ok) {
+          // Clear cart items if data was successfully saved to database
+          handleCheckout()
+        }
+      };
     };
 
     const Item = styled(Paper)(({ theme }) => ({
@@ -126,7 +153,7 @@ import {
                     0
                   )}
                 </Typography>
-                <Button variant="contained" onClick={handleCheckout}>
+                <Button variant="contained" onClick={checkout(cartItems)}>
                   Checkout
                 </Button>
               </Box>

@@ -105,6 +105,7 @@ const Storage = (cartItems) => {
   
       // If the action type is CHECKOUT, we want to clear the cartItems array and set the checkout to true
       case CHECKOUT:
+        console.log(state.cartItems)
         return {
           cartItems: [],
           checkout: true,
