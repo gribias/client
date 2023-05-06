@@ -9,6 +9,7 @@ import {
     CardContent,
     Stack,
     Button,
+    TextField
 } from "@mui/material";
 
 import { PropertyCardProps } from "interfaces/property";
@@ -27,14 +28,15 @@ const ProductCard = ({
 }: PropertyCardProps) => {
     const [amount, setAmount] = useState(0);
     //@ts-ignore
+    
     const { addToCart, increase, cartItems, sumItems, itemCount } = useContext(CartContext);
     
-
+    const [size, setSize] = useState("");
       //Check whether the product is in the cart or not
        //@ts-ignore
   const isInCart = (product) => {
      //@ts-ignore
-    return !!cartItems.find((item) => item.id === product.id);
+     return !!cartItems.find((item) => item.id === product.id && item.size === product.size);
   };
 
 
@@ -105,42 +107,42 @@ const ProductCard = ({
             </CardContent>
             <Stack direction="row" gap={1} alignItems="flex-end" sx={{ml: "auto"}}>
                     {/* <NumberInput value={amount} setValue={setAmount}  /> */}
-                    {isInCart({id,
-    reference,
-    material,
-    cost,
-    photo,}) && (
+                    <TextField
+          label="Size"
+          variant="outlined"
+          size="small"
+          type="number"
+          inputProps={{ min: 3, max: 34 }}
+          value={size}
+          onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setSize(e.target.value)}
+        />
+        {isInCart({ id, reference, material, cost, photo, size }) && (
           <Button
             onClick={() => {
-              increase({id,
-                reference,
-                material,
-                cost,
-                photo,});
+              increase({ id, reference, material, cost,photo, size });
             }}
-            className="btn"
-          >
-            Adicionar mais
-          </Button>
-        )}
-         {!isInCart({id,
-    reference,
-    material,
-    cost,
-    photo,}) && (
-          <Button onClick={() => addToCart({id,
-            reference,
-            material,
-            cost,
-            photo,})}>  <AddShoppingCartOutlinedIcon /> Encomendar</Button>
-        )}
-                    <Button>
-                   
-                    </Button>
-                   
-                </Stack>
-        </Card>
-    );
-};
-
-export default ProductCard;
+            variant="outlined"
+            size="small"
+            >
+            +1
+            </Button>
+            )}
+            {!isInCart({ id, reference, material, cost, photo, size }) && (
+            <Button
+            onClick={() => {
+            addToCart({ id, reference, material, cost, photo, size, amount });
+            setAmount(0);
+            }}
+            variant="contained"
+            size="small"
+            startIcon={<AddShoppingCartOutlinedIcon />}
+            >
+            Add to Cart
+            </Button>
+            )}
+            </Stack>
+            </Card>
+            );
+            };
+            
+            export default ProductCard;
