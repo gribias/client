@@ -37,7 +37,7 @@ import {
 } from "pages/categories";
 import { ColorModeContextProvider } from "./contexts/color-mode";
 import { Header } from "./components/header";
-import { 
+import {
   Login,
   // MyProfile,
   // ProductDetails,
@@ -56,7 +56,7 @@ import { ProductCreate, ProductEdit, ProductList, ProductShow } from "pages/prod
 //All Products
 
 import  Allproducts  from 'pages/allproducts'
-
+import  allOrders  from 'pages/allOrders'
 
 
 // icons
@@ -66,6 +66,7 @@ import {
   Dashboard
 
 } from '@mui/icons-material';
+import { OrderList } from "pages/orders/list";
 
 const axiosInstance = axios.create();
 axiosInstance.interceptors.request.use((request: AxiosRequestConfig) => {
@@ -95,12 +96,12 @@ function App() {
             email: profileObj.email,
             avatar: profileObj.picture,
           })
-        }) 
+        })
 
         const data = await response.json();
         if(response.status === 200) {
 
-       
+
         localStorage.setItem(
           "user",
           JSON.stringify({
@@ -188,7 +189,7 @@ function App() {
                 //   name: "dashboard",
                 //   list: Allproducts,
                 //   icon: <Dashboard />
-                  
+
                 // },
                 {
                   name: "products",
@@ -196,6 +197,17 @@ function App() {
                   create: "/products/create",
                   edit: "/products/edit/:id",
                   show: "/products/show/:id",
+                  icon: <ShoppingBagOutlined />,
+                  meta: {
+                    canDelete: true,
+                  },
+                },
+                {
+                  name: "orders",
+                  list: allOrders,
+                  // create: "/products/create",
+                  // edit: "/products/edit/:id",
+                  // show: "/products/show/:id",
                   icon: <ShoppingBagOutlined />,
                   meta: {
                     canDelete: true,
@@ -227,7 +239,7 @@ function App() {
                 warnWhenUnsavedChanges: true,
               }}
             >
-             
+
               <Routes>
                 <Route
                   element={
@@ -258,7 +270,13 @@ function App() {
                   <Route index element = {<ProductList />} />
                   <Route path="create" element={<ProductCreate />} />
                   <Route path="edit/:id" element={<ProductEdit />} />
-                  <Route path="show/:id" element={<ProductShow />} />  
+                  <Route path="show/:id" element={<ProductShow />} />
+                  </Route>
+                  <Route path="/orders">
+                  <Route index element = {<OrderList />} />
+                  {/* <Route path="create" element={<ProductCreate />} />
+                  <Route path="edit/:id" element={<ProductEdit />} />
+                  <Route path="show/:id" element={<ProductShow />} /> */}
                   </Route>
                 </Route>
                 <Route
@@ -282,7 +300,7 @@ function App() {
                   <Route path="*" element={<ErrorComponent />} />
                 </Route>
               </Routes>
-             
+
               <RefineKbar />
               <UnsavedChangesNotifier />
             </Refine>
