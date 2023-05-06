@@ -41,14 +41,19 @@ export interface PropertyCardProps {
 interface IOrder {
   _id: string;
   user: string;
-  orderDate: Date;
+  orderDate: "string";
   orderNumber: string;
   NumberArticles: number;
   Total: number;
   products: {
-    product: string;
+    product: {
+      _id: string;
+      reference: string;
+      cost: number;
+    };
     quantity: number;
     _id: string;
+    valueOptions?: ValueOptions[]; 
   }[];
   creator: string;
   __v: number;
