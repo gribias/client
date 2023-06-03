@@ -72,13 +72,18 @@ const CartReducer = (state, action) => {
       return {
         ...state,
         ...sumItems(
-          state.cartItems.filter((item) => item.id !== action.payload.id)
+          state.cartItems.filter(
+            (item) =>
+              item.id !== action.payload.id || item.size !== action.payload.size
+          )
         ),
         cartItems: [
-          ...state.cartItems.filter((item) => item.id !== action.payload.id),
+          ...state.cartItems.filter(
+            (item) =>
+              item.id !== action.payload.id || item.size !== action.payload.size
+          ),
         ],
       };
-
     // If the action type is INCREASE, we want to increase the quantity of the particular item in the cartItems array
     case INCREASE:
       const existingItemIncreaseIndex = state.cartItems.findIndex(

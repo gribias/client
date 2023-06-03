@@ -50,6 +50,11 @@ const CartState = ({ children }) => {
     dispatch({ type: "CHECKOUT" });
   };
 
+    // Function to update the note for an item in the cart
+    const updateItemNote = (itemId, note) => {
+      dispatch({ type: "UPDATE_ITEM_NOTE", payload: { itemId, note } });
+    };
+
   return (
     //Add the functions that have been defined above into the Context provider, and pass on to the children
     <CartContext.Provider
@@ -62,6 +67,7 @@ const CartState = ({ children }) => {
         decrease,
         handleCheckout,
         clearCart,
+        updateItemNote, // Add the updateItemNote function to the context value
         ...state,
       }}
     >

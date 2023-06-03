@@ -1,28 +1,99 @@
 import {
   Modal,
-  Backdrop,
   Box,
   Button,
   Card,
   CardContent,
-  Divider,
   Typography,
   Stack,
-  Drawer,
   useMediaQuery,
-  Theme
+  Theme,
+  IconButton,
+  TextField, // Add the TextField component from Material-UI
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import Paper from "@mui/material/Paper";
-import ControlPointOutlinedIcon from "@mui/icons-material/ControlPointOutlined";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import RemoveIcon from "@mui/icons-material/Remove";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import CartContext from "contexts/Cart/CartContext";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useGetIdentity } from "@refinedev/core";
+
+const ItemCard = styled(Card)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  padding: theme.spacing(2),
+  borderRadius: theme.spacing(1),
+  boxShadow: theme.shadows[2],
+}));
+
+const ItemImage = styled("img")({
+  width: "80px",
+  height: "80px",
+  borderRadius: "8px",
+  marginRight: "16px",
+});
+const ItemDetails = styled("div")({
+  flexGrow: 1,
+  marginRight: "16px",
+});
+
+const ItemCost = styled(Typography)({
+  fontWeight: "bold",
+});
+
+interface CartItemProps {
+  item: {
+    photo: string;
+    reference: string;
+    material: string;
+    size: string;
+    quantity: number;
+    cost: number;
+  };
+  onDecrease: () => void;
+  onDelete: (reference: string, size: string) => void;
+}
+
+
+const CartItem: React.FC<CartItemProps> = ({ item, onDecrease, onDelete }) => {
+
+  const handleDelete = () => {
+    onDelete(item.reference, item.size);
+  };
+  return (
+    <ItemCard>
+      <ItemImage src={item.photo} alt={item.reference} />
+      <ItemDetails>
+        <Typography variant="body1">{item.reference}</Typography>
+        <Typography variant="body2">Material: {item.material}</Typography>
+        <Typography variant="body2">Size: {item.size}</Typography>
+        <Typography variant="body2">Quantity: {item.quantity}</Typography>
+      </ItemDetails>
+      <ItemCost variant="body1">€{item.cost}</ItemCost>
+      <IconButton
+        aria-label="Decrease"
+        onClick={onDecrease}
+        disabled={item.quantity === 1}
+      >
+        <RemoveIcon />
+      </IconButton>
+      <IconButton
+        aria-label="Delete"
+        onClick={handleDelete} // Call the handleDelete function instead of onDelete directly
+      >
+        <DeleteIcon />
+      </IconButton>
+    </ItemCard>
+  );
+};
+
 
 interface OrdersModalProps {
   open: boolean;
   onClose: () => void;
+  
 }
 
 export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, open }) => {
@@ -30,11 +101,17 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, open }) => {
     email: string;
   }>();
 
-  const { cartItems, clearCart, increase, itemCount, handleCheckout } =
+  const { cartItems, clearCart, increase, decrease,removeFromCart, itemCount, handleCheckout } =
     useContext(CartContext);
 
-    const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+  const [note, setNote] = useState(""); // State for storing the order note
 
+  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+
+  const handleNoteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNote(e.target.value);
+  };
+  
   const checkout = (cartItems: any) => {
     return async () => {
       const response = await fetch("http://localhost:8080/api/v1/orders", {
@@ -48,6 +125,7 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, open }) => {
               total + item.cost * item.quantity,
             0
           ),
+          note: note, // Include the note in the request body
         }),
         headers: {
           "Content-Type": "application/json",
@@ -59,24 +137,6 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, open }) => {
       }
     };
   };
-
-  const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: "center",
-    color: theme.palette.text.secondary,
-  }));
-
-  // Group items by product and different sizes
-  const groupedItems = cartItems.reduce((groups: any, item: any) => {
-    const key = item.id + "_" + item.reference;
-    if (!groups[key]) {
-      groups[key] = [];
-    }
-    groups[key].push(item);
-    return groups;
-  }, {});
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -98,57 +158,37 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, open }) => {
             {cartItems.length > 0 ? (
               <>
                 {cartItems.map((item: any, index: number) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      my: isMobile ? 1 : 2,
-                      flexDirection: isMobile ? "column" : "row",
-                    }}
-                  >
-                    <img
-                      src={item.photo}
-                      alt={item.reference}
-                      style={{
-                        marginRight: isMobile ? 0 : "8px",
-                        marginBottom: isMobile ? "8px" : 0,
-                        height: isMobile ? "60px" : "40px",
-                        width: isMobile ? "60px" : "40px",
-                      }}
-                    />
-                    <Box>
-                      <Item>{item.reference}</Item>
-                      <Item>{item.size}</Item>
-                      <Item>{item.quantity}</Item>
-                      <Item>{item.cost}</Item>
-                    </Box>
-                  </Box>
+                  <CartItem key={index} item={item} onDecrease={() => decrease(item)}  onDelete= {() => removeFromCart(item)}/>
                 ))}
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mt: isMobile ? 2 : 4,
-                    flexDirection: isMobile ? "column" : "row",
-                  }}
+                <Stack
+                  direction={isMobile ? "column" : "row"}
+                  spacing={2}
+                  alignItems="center"
+                  mt={isMobile ? 2 : 4}
                 >
                   <Typography variant="h6" sx={{ mb: isMobile ? 2 : 0 }}>
                     Total: €
                     {cartItems.reduce(
-                (total, item) => total + (item.cost * (item.quantity ?? 0)),
-                0
-                )}
+                      (total, item) => total + item.cost * (item.quantity ?? 0),
+                      0
+                    )}
                   </Typography>
+                  {/* Note input field */}
+                  <TextField
+                    label="Order Note"
+                    variant="outlined"
+                    value={note}
+                    onChange={handleNoteChange}
+                  />
                   <Button
                     variant="contained"
+                    startIcon={<ShoppingCartOutlinedIcon />}
                     onClick={checkout(cartItems)}
                     disabled={cartItems.length === 0}
                   >
                     Checkout
                   </Button>
-                </Box>
+                </Stack>
               </>
             ) : (
               <Typography variant="body1">Your cart is empty</Typography>
