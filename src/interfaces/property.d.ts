@@ -11,27 +11,62 @@ export interface FormValues {
     propertyType: string,
     grams:number,
     material: string,
-    cost: number | undefined,
+    cost: number ,
 }
 
 export interface PropertyCardProps {
   id?: BaseKey | undefined,
   reference: string,
   material: string,
-  cost?: number,
+  cost: number,
   photo: string,
 }
 
-export interface IOrder {
-  id: number;
-  //user: IUser;
-  createdAt: string;
-  products: PropertyCardProps[];
-  //status: IOrderStatus;
-  //adress: IAddress;
-  //store: IStore;
-  //courier: ICourier;
-  //events: IEvent[];
-  orderNumber: number;
-  amount: number;
+
+
+// export interface IOrder {
+//   id: number;
+//   //user: IUser;
+//   createdAt: string;
+//   products: PropertyCardProps[];
+//   //status: IOrderStatus;
+//   //adress: IAddress;
+//   //store: IStore;
+//   //courier: ICourier;
+//   events: IEvent[];
+//   orderNumber: number;
+//   amount: number;
+// }
+
+interface IOrder {
+  _id: string;
+  user: string;
+  orderDate: "string";
+  orderNumber: string;
+  NumberArticles: number;
+  Total: number;
+  products: {
+    product: {
+      _id: string;
+      reference: string;
+      cost: number;
+    };
+    quantity: number;
+    _id: string;
+    valueOptions?: ValueOptions[]; 
+  }[];
+  creator: string;
+  __v: number;
+}
+
+export interface IOrderFilterVariables {
+  q?: string;
+  material?: string;
+  user?: string;
+  status?: string[];
+}
+
+export interface IEvent {
+  date: string;
+  status: string;
 }

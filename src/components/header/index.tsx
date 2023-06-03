@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useGetIdentity } from "@refinedev/core";
 import {
   AppBar,
@@ -7,13 +7,20 @@ import {
   Stack,
   Toolbar,
   Typography,
+  Badge,
+  BadgeProps,
 } from "@mui/material";
+import { styled } from '@mui/material/styles';
 import { RefineThemedLayoutHeaderProps } from "@refinedev/mui";
 import { DarkModeOutlined, LightModeOutlined, Menu } from "@mui/icons-material";
 import ShoppingCartCheckoutOutlinedIcon from '@mui/icons-material/ShoppingCartCheckoutOutlined';
-import { useBasketContext, useOrdersModalContext } from "../../hooks/index";
 
 import { ColorModeContext } from "../../contexts/color-mode";
+
+import CartContext from "contexts/Cart/CartContext";
+import { typography } from "@mui/system";
+import { OrdersModal } from '../../components/common/ordersModal';
+
 
 type IUser = {
   id: number;
@@ -32,9 +39,28 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
 
   const hasSidebarToggle = Boolean(onToggleSiderClick);
 
-  const { setOrdersModalVisible } = useOrdersModalContext();
-  const { orders, totalPrice } = useBasketContext();
-  const isBasketHaveOrders = orders.length > 0;
+  const [toggle, setToggle] = useState(false);
+  // Extract itemscount from CartContext
+  //@ts-ignore
+  const { cartItems, itemCount } = useContext(CartContext);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleClickOpen = () => {
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
+
+  const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
+    '& .MuiBadge-badge': {
+      right: -3,
+      top: 10,
+      border: `2px solid ${theme.palette.background.paper}`,
+      padding: '0 4px',
+    },
+  }));
 
   return (
     <AppBar position="sticky">
@@ -67,33 +93,37 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
             justifyContent="flex-end"
             alignItems="center"
           >
-            <IconButton
+            {/* <IconButton
               color="inherit"
               onClick={() => {
                 setMode();
               }}
             >
               {mode === "dark" ? <LightModeOutlined /> : <DarkModeOutlined />}
-            </IconButton>
-
+            </IconButton> */}
             <div
-                    className="flex cursor-pointer items-center gap-2"
-                    onClick={() =>{
-                        setOrdersModalVisible((prev: boolean) => !prev)
-                        console.log('click')
-                    }
-                    }
-                >
-                    {isBasketHaveOrders && (
-                        <div className="text-lg font-semibold text-white">
-                            {isBasketHaveOrders && `${orders.length} items /`}{" "}
-                            <span className="text-xl font-extrabold">
-                                ${totalPrice / 100}
-                            </span>
-                        </div>
-                    )}
-<ShoppingCartCheckoutOutlinedIcon />
-</div>
+            onClick={handleClickOpen}
+            >
+   {/* Show the modal if showModal is true */}
+   { <OrdersModal onClose={handleModalClose} open={showModal} />}
+            {cartItems.length > 0 && (
+                 <Stack
+                 direction="row"
+                 >
+                  <IconButton aria-label="cart">
+      <StyledBadge badgeContent={itemCount} color="secondary">
+        <ShoppingCartCheckoutOutlinedIcon />
+      </StyledBadge>
+    </IconButton>
+                  </Stack>
+            )}
+            
+           
+            
+            </div>
+          
+
+  
             {(user?.avatar || user?.name) && (
               <Stack
                 direction="row"

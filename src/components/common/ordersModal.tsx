@@ -1,102 +1,201 @@
-import { useRef } from "react";
-import { useCreate, useGo } from "@refinedev/core";
-
 import {
-    useBasketContext,
-    useOrdersModalContext,
-    useOnClickOutside,
-} from "../../hooks/index";
+  Modal,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  Stack,
+  useMediaQuery,
+  Theme,
+  IconButton,
+  TextField, // Add the TextField component from Material-UI
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import RemoveIcon from "@mui/icons-material/Remove";
+import DeleteIcon from '@mui/icons-material/Delete';
 
-import { OrderModalProductItem } from "./orderModalProductItem";
-import { IOrder } from "../../interfaces/property";
+import CartContext from "contexts/Cart/CartContext";
+import React, { useContext, useState } from "react";
+import { useGetIdentity } from "@refinedev/core";
 
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
-import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
+const ItemCard = styled(Card)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  padding: theme.spacing(2),
+  borderRadius: theme.spacing(1),
+  boxShadow: theme.shadows[2],
+}));
 
-export const OrdersModal: React.FC = () => {
-    const ref = useRef(null);
-    const go = useGo();
-    const { setOrdersModalVisible } = useOrdersModalContext();
-    const { orders, totalPrice, products, dispatch } = useBasketContext();
-    const { mutate } = useCreate<IOrder>();
+const ItemImage = styled("img")({
+  width: "80px",
+  height: "80px",
+  borderRadius: "8px",
+  marginRight: "16px",
+});
+const ItemDetails = styled("div")({
+  flexGrow: 1,
+  marginRight: "16px",
+});
 
-    const handleClickOutside = () => {
-        setOrdersModalVisible(false);
+const ItemCost = styled(Typography)({
+  fontWeight: "bold",
+});
+
+interface CartItemProps {
+  item: {
+    photo: string;
+    reference: string;
+    material: string;
+    size: string;
+    quantity: number;
+    cost: number;
+  };
+  onDecrease: () => void;
+  onDelete: (reference: string, size: string) => void;
+}
+
+
+const CartItem: React.FC<CartItemProps> = ({ item, onDecrease, onDelete }) => {
+
+  const handleDelete = () => {
+    onDelete(item.reference, item.size);
+  };
+  return (
+    <ItemCard>
+      <ItemImage src={item.photo} alt={item.reference} />
+      <ItemDetails>
+        <Typography variant="body1">{item.reference}</Typography>
+        <Typography variant="body2">Material: {item.material}</Typography>
+        <Typography variant="body2">Size: {item.size}</Typography>
+        <Typography variant="body2">Quantity: {item.quantity}</Typography>
+      </ItemDetails>
+      <ItemCost variant="body1">€{item.cost}</ItemCost>
+      <IconButton
+        aria-label="Decrease"
+        onClick={onDecrease}
+        disabled={item.quantity === 1}
+      >
+        <RemoveIcon />
+      </IconButton>
+      <IconButton
+        aria-label="Delete"
+        onClick={handleDelete} // Call the handleDelete function instead of onDelete directly
+      >
+        <DeleteIcon />
+      </IconButton>
+    </ItemCard>
+  );
+};
+
+
+interface OrdersModalProps {
+  open: boolean;
+  onClose: () => void;
+  
+}
+
+export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, open }) => {
+  const { data: user } = useGetIdentity<{
+    email: string;
+  }>();
+
+  const { cartItems, clearCart, increase, decrease,removeFromCart, itemCount, handleCheckout } =
+    useContext(CartContext);
+
+  const [note, setNote] = useState(""); // State for storing the order note
+
+  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+
+  const handleNoteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNote(e.target.value);
+  };
+  
+  const checkout = (cartItems: any) => {
+    return async () => {
+      const response = await fetch("http://localhost:8080/api/v1/orders", {
+        method: "POST",
+        body: JSON.stringify({
+          cartItems,
+          email: user?.email ?? "",
+          NumberArticles: itemCount,
+          Total: cartItems.reduce(
+            (total: number, item: { cost: number; quantity: number }) =>
+              total + item.cost * item.quantity,
+            0
+          ),
+          note: note, // Include the note in the request body
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        handleCheckout();
+      }
     };
-    useOnClickOutside(ref, handleClickOutside);
+  };
 
-    return (
-        <>
-            <div className="fixed inset-0 z-50 bg-black opacity-40"></div>
-            <div className="fixed inset-0 z-50 flex items-center">
-                <div
-                    ref={ref}
-                    className="mx-auto max-h-[95%] w-[500px] overflow-auto rounded-lg bg-white shadow-lg"
+  return (
+    <Modal open={open} onClose={onClose}>
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          backgroundColor: "white",
+          maxWidth: 500,
+          width: "100%",
+          p: 2,
+        }}
+      >
+        <Card>
+          <CardContent>
+            <Typography variant="h4">Your Orders</Typography>
+            {cartItems.length > 0 ? (
+              <>
+                {cartItems.map((item: any, index: number) => (
+                  <CartItem key={index} item={item} onDecrease={() => decrease(item)}  onDelete= {() => removeFromCart(item)}/>
+                ))}
+                <Stack
+                  direction={isMobile ? "column" : "row"}
+                  spacing={2}
+                  alignItems="center"
+                  mt={isMobile ? 2 : 4}
                 >
-                    <div className="bg-primary relative p-2">
-                        <button
-                            className="absolute right-2 top-2 p-1 transition-all hover:bg-orange-500 active:scale-90"
-                            onClick={() => setOrdersModalVisible(false)}
-                        >
-                            <CloseOutlinedIcon className="h-6 w-6 text-white" />
-                        </button>
-                        <CreateNewFolderOutlinedIcon />
-                    </div>
-                    <div className="p-4">
-                        <div className="flex flex-col gap-2">
-                            {orders.length ? (
-                                orders.map((order, index) => (
-                                    <OrderModalProductItem
-                                        key={index}
-                                        order={order}
-                                    />
-                                ))
-                            ) : (
-                                <p className="flex h-48 items-center justify-center text-xl font-bold text-gray-500">
-                                    No have any items.
-                                </p>
-                            )}
-                        </div>
-                        <div className="mt-2 flex flex-col items-end gap-2">
-                            <div className="flex items-center justify-center gap-2">
-                                Total:
-                                <span className="text-lg font-bold text-gray-800">
-                                    {orders.length} items / ${totalPrice / 100}
-                                </span>
-                            </div>
-                            <button
-                                onClick={() =>
-                                    mutate(
-                                        {
-                                            resource: "orders",
-                                            values: {
-                                                products,
-                                                amount: totalPrice,
-                                            },
-                                            successNotification: false,
-                                        },
-                                        {
-                                            onSuccess: (data) => {
-                                                go({
-                                                    to: `/order/${data.data.id}`,
-                                                    type: "replace",
-                                                });
-                                                setOrdersModalVisible(false);
-                                                dispatch({
-                                                    type: "resetBasket",
-                                                });
-                                            },
-                                        },
-                                    )
-                                }
-                                className="bg-primary border-primary rounded-md border px-4 text-lg font-bold text-white transition-all hover:bg-orange-500 active:scale-95"
-                            >
-                                Order
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
-    );
+                  <Typography variant="h6" sx={{ mb: isMobile ? 2 : 0 }}>
+                    Total: €
+                    {cartItems.reduce(
+                      (total, item) => total + item.cost * (item.quantity ?? 0),
+                      0
+                    )}
+                  </Typography>
+                  {/* Note input field */}
+                  <TextField
+                    label="Order Note"
+                    variant="outlined"
+                    value={note}
+                    onChange={handleNoteChange}
+                  />
+                  <Button
+                    variant="contained"
+                    startIcon={<ShoppingCartOutlinedIcon />}
+                    onClick={checkout(cartItems)}
+                    disabled={cartItems.length === 0}
+                  >
+                    Checkout
+                  </Button>
+                </Stack>
+              </>
+            ) : (
+              <Typography variant="body1">Your cart is empty</Typography>
+            )}
+          </CardContent>
+        </Card>
+      </Box>
+    </Modal>
+  );
 };
