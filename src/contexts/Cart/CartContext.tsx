@@ -1,19 +1,20 @@
-//@ts-nocheck
 import { createContext } from "react";
 import { ICart } from "../../interfaces/cart";
 
 interface ICartContext {
-  cartItems: [];
+  cartItems: ICart[];
   clearCart: () => void;
-  increase: (payload: any) => void;
-  itemCount: [];
+  increase: (payload: ICart) => void;
+  itemCount: number;
   handleCheckout: () => void;
-  
-  // add any other properties or methods that you expect to use
 }
 
 const CartContext = createContext<ICartContext>({
   cartItems: [],
+  clearCart: () => {},
+  increase: () => {},
+  itemCount: 0,
+  handleCheckout: () => {},
 });
 
 export default CartContext;
