@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 
 import reportWebVitals from "./reportWebVitals";
 import App from "./App";
+import './index.css'
 import CartState from "./contexts/Cart/CarState";
 
 const container = document.getElementById("root") as HTMLElement;

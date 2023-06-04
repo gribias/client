@@ -42,6 +42,7 @@ const ProductCard = ({
 
     return (
         <Card
+       
             sx={{
                 maxWidth: "330px",
                 padding: "10px",
@@ -53,6 +54,7 @@ const ProductCard = ({
             }}
             elevation={0}
         >
+            <Link to={`/products/show/${id}`}>
             <CardMedia
                 component="img"
                 width="100%"
@@ -61,6 +63,7 @@ const ProductCard = ({
                 alt="card image"
                 sx={{ borderRadius: "10px" }}
             />
+            </Link>
             <CardContent
                 sx={{
                     display: "flex",
@@ -73,8 +76,7 @@ const ProductCard = ({
                 <Stack
                     direction="column"
                     gap={1}
-                    component={Link}
-                    to={`/products/show/${id}`} // send after dev to top
+                    
                 >
                     <Typography fontSize={16} fontWeight={500} color="#11142d">
                         {reference}
