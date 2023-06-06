@@ -9,7 +9,7 @@ import {CustomButton} from "../../components/common/customButton";
 import {PropertyCardProps} from '../../interfaces/property';
 export const ProductShow: React.FC<IResourceComponentsProps> = () => {
 //  return <MuiShowInferencer />;
-const navigate = useNavigation();
+const { list } = useNavigation();
 const { data: user } = useGetIdentity() as { data: { email: string } };
 const {id} = useParsed();
 const { mutate } = useDelete();
@@ -25,7 +25,18 @@ if(isError) return <div>Error</div>
 const isCurrentUser = user.email === productDetails.creator.email || user.email === "gabrielcorreia94@gmail.com";
 
   function handleDeleteProperty() {
-    throw new Error("Function not implemented.");
+    // eslint-disable-next-line no-restricted-globals
+    const response = confirm('Eliminar producto? (Esta ação é irreversível)');
+    if(response) {
+     mutate({
+      resource: 'products',
+      id: id as string,
+     },{
+        onSuccess: () => {
+          list('products');
+        },
+     })
+    }
   }
 
 return (
@@ -108,7 +119,42 @@ return (
           </Box>
           
         </Box>
+         <Box width="100%" flex={1} maxWidth={326} display="flex" flexDirection="column" gap="20px">
+          <Stack
+            width="100%"
+            p={2}
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+            border="1px solid #E4E4E4"
+            borderRadius={2}
+          ></Stack>
+          <Stack width="100%" mt="25px" direction="row" flexWrap="wrap" gap={2}>
+              <CustomButton
+                title={!isCurrentUser ? 'Message' : 'Edit'}
+                backgroundColor="#475BE8"
+                color="#FCFCFC"
+                fullWidth
+                icon={!isCurrentUser ? <></> : <Edit />}
+                handleClick={() => {
+                  if (isCurrentUser) {
+                    //navigate(`/properties/edit/${propertyDetails._id}`);
+                  }
+                }}
+              />
+              <CustomButton
+                title={!isCurrentUser ? 'Call' : 'Delete'}
+                backgroundColor={!isCurrentUser ? '#2ED480' : '#d42e2e'}
+                color="#FCFCFC"
+                fullWidth
+                icon={!isCurrentUser ? <></> : <Delete />}
+                handleClick={() => {
+                  if (isCurrentUser) handleDeleteProperty();
+                }}
+              />
+            </Stack>
         
+          </Box>
       
       </Box>
      
