@@ -5,14 +5,16 @@ import{useDelete, useGetIdentity, useShow} from "@refinedev/core";
 import { useParsed , useNavigation } from "@refinedev/core";
 import{Delete, Edit} from "@mui/icons-material";
 import {CustomButton} from "../../components/common/customButton";
+import {CustomButtonEddit} from "../../components/common/customButtonEddit";
 
 import {PropertyCardProps} from '../../interfaces/property';
 export const ProductShow: React.FC<IResourceComponentsProps> = () => {
 //  return <MuiShowInferencer />;
-const { list } = useNavigation();
+const { list , edit} = useNavigation();
 const { data: user } = useGetIdentity() as { data: { email: string } };
 const {id} = useParsed();
 const { mutate } = useDelete();
+
 const { queryResult } = useShow();
 
 const {data, isLoading, isError} = queryResult;
@@ -38,6 +40,10 @@ const isCurrentUser = user.email === productDetails.creator.email || user.email 
      })
     }
   }
+
+  // function handleEditProperty() {
+  //   edit('products', id as string);
+  // }
 
 return (
   
@@ -79,6 +85,15 @@ return (
               >
                 {productDetails.material}
               </Typography>
+              <Typography
+                fontSize={14}
+                fontWeight={500}
+                color="#808191"
+                textTransform="capitalize"
+              >
+                Gramas: {productDetails.grams}
+              </Typography>
+                
             </Stack>
 
             <Stack direction="row" justifyContent="space-between"
@@ -106,6 +121,7 @@ return (
 
               
               <Box>
+             
               <Typography
                 fontSize={18}
                 fontWeight={500}
@@ -130,15 +146,21 @@ return (
             borderRadius={2}
           ></Stack>
           <Stack width="100%" mt="25px" direction="row" flexWrap="wrap" gap={2}>
-              <CustomButton
+              <CustomButtonEddit
                 title={!isCurrentUser ? 'Message' : 'Edit'}
                 backgroundColor="#475BE8"
                 color="#FCFCFC"
                 fullWidth
                 icon={!isCurrentUser ? <></> : <Edit />}
-                handleClick={() => {
+                handleEdit={() => {
+                  console.log('edit')
                   if (isCurrentUser) {
                     //navigate(`/properties/edit/${propertyDetails._id}`);
+                    
+                       
+                       edit('products', id as string);
+                       
+                     
                   }
                 }}
               />

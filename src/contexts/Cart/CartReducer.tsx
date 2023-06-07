@@ -115,11 +115,21 @@ const CartReducer = (state, action) => {
         (item) => item.id === action.payload.id && item.size === action.payload.size
       );
       if (existingItemDecreaseIndex !== -1) {
-        state.cartItems[existingItemDecreaseIndex].quantity--;
+        const existingItem = state.cartItems[existingItemDecreaseIndex];
+        const updatedQuantity = existingItem.quantity - 1;
+        const updatedItem = {
+          ...existingItem,
+          quantity: updatedQuantity > 0 ? updatedQuantity : 0
+        };
+        const updatedCartItems = [
+          ...state.cartItems.slice(0, existingItemDecreaseIndex),
+          updatedItem,
+          ...state.cartItems.slice(existingItemDecreaseIndex + 1)
+        ];
         return {
           ...state,
-          ...sumItems(state.cartItems),
-          cartItems: [...state.cartItems],
+          ...sumItems(updatedCartItems),
+          cartItems: updatedCartItems,
         };
       }
       return state;

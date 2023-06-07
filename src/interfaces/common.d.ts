@@ -6,7 +6,18 @@ export interface CustomButtonProps {
     fullWidth?: boolean,
     icon?: ReactNode,
     disabled?: boolean,
-    handleClick?: () => void
+    handleClick?: () => void,
+}
+
+export interface CustomButtonEdditProps {
+    type?: string,
+    title: string,
+    backgroundColor: string,
+    color: string,
+    fullWidth?: boolean,
+    icon?: ReactNode,
+    disabled?: boolean,
+    handleEdit?: () => void
 }
 
 export interface ProfileProps {

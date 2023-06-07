@@ -20,6 +20,7 @@ export interface PropertyCardProps {
   material: string,
   cost: number,
   photo: string,
+  grams: number,
 }
 
 

@@ -104,9 +104,9 @@ import { fontWeight } from '@mui/system';
                 defaultValue="gold"
                 {...register("material", { required: true })}
               >
-                <MenuItem value="gold"> Gold</MenuItem>
-                <MenuItem value="silver"> Silver</MenuItem>
-                <MenuItem value="bronze"> Bronze</MenuItem>
+                <MenuItem value="gold"> Ouro</MenuItem>
+                <MenuItem value="silver"> Prata</MenuItem>
+                <MenuItem value="bronze"> Ouro/Prata</MenuItem>
               </Select>
             </FormControl>
             <FormControl>

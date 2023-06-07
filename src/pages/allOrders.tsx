@@ -20,6 +20,8 @@ import {
 import { useTable } from '@refinedev/core';
 import {IOrder} from '../interfaces/property';
 import {  CustomTooltip } from "components/common/customToolTip";
+import{ useGetIdentity} from "@refinedev/core";
+
 
 const AllOrders = () => {
 //   const {
@@ -36,6 +38,8 @@ const AllOrders = () => {
 
 //   const allOrders = data?.data ?? [];
 
+const { data: user } = useGetIdentity() as { data: { email: string } };
+
   const { dataGridProps, search, filters, sorter } = useDataGrid<
   IOrder
 >({
@@ -47,13 +51,15 @@ const AllOrders = () => {
             order: "asc",
         },
     ],
-    initialFilter: [
+    filters:{initial: [
         {
-            field: "status",
+            field: "creator",
             operator: "eq",
-            value: "draft",
+            value: user.email,
         },
     ],
+    },
+    resource: "orders",
     syncWithLocation: true,
 });
 
@@ -234,20 +240,25 @@ const columns = React.useMemo<GridColumns<IOrder>>(
 //   });
 
   return (
-    <div style={{ height: 400, width: '100%' }}>
-      <DataGrid  {...dataGridProps} columns={columns} pageSize={10} getRowId={getRowId} onRowClick={({ id }) => {
-                            console.log(id);
-                        }}
-                        rowsPerPageOptions={[10, 20, 50, 100]}
-                        sx={{
-                            ...dataGridProps.sx,
-                            "& .MuiDataGrid-row": {
-                                cursor: "pointer",
-                            },
-                        }}  />
-      {/* rows={rows} */}
-      
-    </div>
+      <div style={{ height: 400, width: "100%" }}>
+          <DataGrid
+              {...dataGridProps}
+              columns={columns}
+              pageSize={10}
+              getRowId={getRowId}
+              onRowClick={({ id }) => {
+                  console.log(id);
+              }}
+              rowsPerPageOptions={[10, 20, 50, 100]}
+              sx={{
+                  ...dataGridProps.sx,
+                  "& .MuiDataGrid-row": {
+                      cursor: "pointer",
+                  },
+              }}
+          />
+          {/* rows={rows} */}
+      </div>
   );
 };
 

@@ -128,6 +128,7 @@ const Allproducts = () => {
             material={product.material}
             cost={product.cost}
             photo={product.photo}
+            grams = {product.grams}
           />
         ))}
       </Box>

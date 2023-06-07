@@ -15,7 +15,6 @@ import { styled } from "@mui/material/styles";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import RemoveIcon from "@mui/icons-material/Remove";
 import DeleteIcon from '@mui/icons-material/Delete';
-
 import CartContext from "contexts/Cart/CartContext";
 import React, { useContext, useState } from "react";
 import { useGetIdentity } from "@refinedev/core";
@@ -66,10 +65,10 @@ const CartItem: React.FC<CartItemProps> = ({ item, onDecrease, onDelete }) => {
     <ItemCard>
       <ItemImage src={item.photo} alt={item.reference} />
       <ItemDetails>
-        <Typography variant="body1">{item.reference}</Typography>
-        <Typography variant="body2">Material: {item.material}</Typography>
-        <Typography variant="body2">Size: {item.size}</Typography>
-        <Typography variant="body2">Quantity: {item.quantity}</Typography>
+        <Typography variant="body1"   textTransform="capitalize">{item.reference}</Typography>
+        <Typography variant="body2">tipo: {item.material}</Typography>
+        <Typography variant="body2">tamanho: {item.size}</Typography>
+        <Typography variant="body2">Quantidade: {item.quantity}</Typography>
       </ItemDetails>
       <ItemCost variant="body1">€{item.cost}</ItemCost>
       <IconButton
@@ -154,7 +153,7 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, open }) => {
       >
         <Card>
           <CardContent>
-            <Typography variant="h4">Your Orders</Typography>
+            <Typography variant="h4">Encomendas</Typography>
             {cartItems.length > 0 ? (
               <>
                 {cartItems.map((item: any, index: number) => (
@@ -186,12 +185,12 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, open }) => {
                     onClick={checkout(cartItems)}
                     disabled={cartItems.length === 0}
                   >
-                    Checkout
+                    Finalizar
                   </Button>
                 </Stack>
               </>
             ) : (
-              <Typography variant="body1">Your cart is empty</Typography>
+              <Typography variant="body1">Carrinho vazio</Typography>
             )}
           </CardContent>
         </Card>

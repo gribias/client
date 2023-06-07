@@ -25,6 +25,7 @@ const ProductCard = ({
     material,
     cost,
     photo,
+    grams
 }: PropertyCardProps) => {
     const [amount, setAmount] = useState(0);
     //@ts-ignore
@@ -92,6 +93,10 @@ const ProductCard = ({
                         <Typography fontSize={14} color="#808191">
                             {material}
                         </Typography>
+
+                        <Typography fontSize={14} color="#808191">
+                            {grams} gramas
+                        </Typography>
                     </Stack>
                 </Stack>
                 <Box
@@ -139,7 +144,7 @@ const ProductCard = ({
             size="small"
             startIcon={<AddShoppingCartOutlinedIcon />}
             >
-            Add to Cart
+            comprar
             </Button>
             )}
             </Stack>
