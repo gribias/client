@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Stack, Typography, FormControl,
 FormHelperText, TextField, TextareaAutosize,
 Select, MenuItem,Button
@@ -12,6 +12,25 @@ import { fontWeight } from '@mui/system';
     type, register, handleSubmit,handleImageChange,formLoading,
     onFinishHandler,productImage }: FormProps 
 ) => {
+
+  const [userProduct, setUserProduct] = useState([]);
+
+  useEffect(() => {
+    // Fetch user IDs
+    fetch('http://localhost:8080/api/v1/users')
+      .then((response) => response.json())
+      .then((data) => {
+        // Extract user emails from the response data
+        const emails = data.map((user: { email: any; }) => user.email);
+        console.log("emails",emails)
+        setUserProduct(emails);
+      })
+      .catch((error) => {
+        console.error('Error fetching user IDs:', error);
+      });
+  }, []);
+
+
   return (
     <Box>
       <Typography fontSize={25} fontWeight={700} color="#11142d">
@@ -133,7 +152,34 @@ import { fontWeight } from '@mui/system';
               })}
             />
           </FormControl>
-         
+          {/* Add the dropdown for user IDs */}
+          <FormControl>
+              <FormHelperText
+                sx={{
+                  fontWeight: 500,
+                  margin: '10px',
+                  fontSize: 16,
+                  color: '#11142d'
+                }}
+              >
+                Select User Email
+              </FormHelperText>
+              <Select
+                variant="outlined"
+                color="info"
+                required
+                inputProps={{
+                  'aria-label': 'Without label'
+                }}
+                {...register('userProduct', { required: true })}
+              >
+                {userProduct.map((id) => (
+                  <MenuItem key={id} value={id}>
+                    {id}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Stack>
           <FormControl>
             <FormHelperText
