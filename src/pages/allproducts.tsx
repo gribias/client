@@ -1,15 +1,26 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Add } from '@mui/icons-material';
 import { useTable } from '@refinedev/core';
 import { Box, Stack, TextField, Typography, Select,MenuItem } from "@mui/material";
 import { useGo } from "@refinedev/core";
 import  {CustomButton}  from 'components/common/customButton';
 import ProductCard from 'components/common/ProductCard'
-
+import { useGetIdentity } from "@refinedev/core";
 // import { PropertyCard, CustomButton } from 'components'
 
 const Allproducts = () => {
  const go = useGo();
+ const { data: user } = useGetIdentity<{
+  email: string;
+}>();
+
+const [userEmail, setUserEmail] = useState('');
+
+useEffect(() => {
+  if (user?.email) {
+    setUserEmail(user.email);
+  }
+}, [user]);
 
  const {
   tableQueryResult: {data, isLoading, isError},
@@ -22,7 +33,13 @@ const Allproducts = () => {
   filters,setFilters
  } = useTable();
 
- const allProducts = data?.data ?? [];
+const allProducts = useMemo(() => {
+  if (userEmail === 'gabriel.correia94@gmail.com') {
+    return data?.data ?? [];
+  } else {
+    return data?.data.filter((product) => product.userProduct === userEmail) ?? [];
+  }
+}, [data, userEmail]);
 
  const currentCost = sorter.find((item) => item.field === 'cost')?.order;
 
@@ -72,7 +89,8 @@ const Allproducts = () => {
                 field:'reference',
                 operator: 'contains',
                 value: e.currentTarget.value ? e.currentTarget.value: undefined
-              }
+              },
+           
             ])
           }}
             />
