@@ -17,11 +17,11 @@ import {
     NumberField,
     DateField,
 } from "@refinedev/mui";
-import { useTable } from '@refinedev/core';
+import { useNavigation, useTable } from '@refinedev/core';
 import {IOrder} from '../interfaces/property';
 import {  CustomTooltip } from "components/common/customToolTip";
 import{ useGetIdentity} from "@refinedev/core";
-
+import { useGo } from "@refinedev/core";
 
 const AllOrders = () => {
 //   const {
@@ -37,7 +37,7 @@ const AllOrders = () => {
 //   } = useTable();
 
 //   const allOrders = data?.data ?? [];
-
+const go = useGo();
 const { data: user } = useGetIdentity() as { data: { email: string } };
 
   const { dataGridProps, search, filters, sorter } = useDataGrid<
@@ -238,7 +238,7 @@ const columns = React.useMemo<GridColumns<IOrder>>(
 //       Total: `${order.Total}€`,
 //     };
 //   });
-
+const { show } = useNavigation();
   return (
       <div style={{ height: 400, width: "100%" }}>
           <DataGrid
@@ -247,7 +247,13 @@ const columns = React.useMemo<GridColumns<IOrder>>(
               pageSize={10}
               getRowId={getRowId}
               onRowClick={({ id }) => {
-                  console.log(id);
+                //show("orders",id);
+           
+                    go({
+                      to: `/orders/show/${id}`
+                    })
+                  
+                console.log(show)
               }}
               rowsPerPageOptions={[10, 20, 50, 100]}
               sx={{

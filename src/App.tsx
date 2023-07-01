@@ -52,7 +52,8 @@ import { parseJwt } from "utils/parse-jwt";
 
 import { MuiInferencer } from "@refinedev/inferencer/mui";
 import { ProductCreate, ProductEdit, ProductList, ProductShow } from "pages/products";
-
+import { OrderList } from "pages/orders/list";
+import { OrderShow } from "pages/orders/show";
 //All Products
 
 import  Allproducts  from 'pages/allproducts'
@@ -66,7 +67,7 @@ import {
   Dashboard,
   DiamondOutlined
 } from '@mui/icons-material';
-import { OrderList } from "pages/orders/list";
+
 
 const axiosInstance = axios.create();
 axiosInstance.interceptors.request.use((request: AxiosRequestConfig) => {
@@ -207,7 +208,7 @@ function App() {
                   list: allOrders,
                   // create: "/products/create",
                   // edit: "/products/edit/:id",
-                  // show: "/products/show/:id",
+                  show: "/orders/show/:id",
                   icon: <ShoppingBagOutlined />,
                   meta: {
                     canDelete: true,
@@ -275,8 +276,8 @@ function App() {
                   <Route path="/orders">
                   <Route index element = {<OrderList />} />
                   {/* <Route path="create" element={<ProductCreate />} />
-                  <Route path="edit/:id" element={<ProductEdit />} />
-                  <Route path="show/:id" element={<ProductShow />} /> */}
+                  <Route path="edit/:id" element={<ProductEdit />} />*/}
+                  <Route path="show/:id" element={<OrderShow />} /> 
                   </Route>
                 </Route>
                 <Route
