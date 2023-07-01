@@ -120,12 +120,12 @@ import { fontWeight } from '@mui/system';
                 inputProps={{
                   "aria-label": "Without label",
                 }}
-                defaultValue="gold"
+                defaultValue="Ag-prata"
                 {...register("material", { required: true })}
               >
-                <MenuItem value="gold"> Ouro</MenuItem>
-                <MenuItem value="silver"> Prata</MenuItem>
-                <MenuItem value="bronze"> Ouro/Prata</MenuItem>
+                <MenuItem value="Ag-prata"> Prata</MenuItem>
+                <MenuItem value="Au-Ouro "> Ouro</MenuItem>
+                <MenuItem value="Au-Ag"> Ouro/Prata</MenuItem>
               </Select>
             </FormControl>
             <FormControl>
