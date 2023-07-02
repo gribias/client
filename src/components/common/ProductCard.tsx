@@ -115,18 +115,18 @@ const ProductCard = ({
             <Stack direction="row" gap={1} alignItems="flex-end" sx={{ml: "auto"}}>
                     {/* <NumberInput value={amount} setValue={setAmount}  /> */}
                     <TextField
-          label="Size"
+          label="tamanho"
           variant="outlined"
           size="small"
           type="number"
-          inputProps={{ min: 3, max: 34 }}
+          inputProps={{ min: 3, max: 36 }}
           value={size}
           onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setSize(e.target.value)}
         />
-        {isInCart({ id, reference, material, cost, photo, size }) && (
+        {isInCart({ id, reference, material, cost, photo, size,grams }) && (
           <Button
             onClick={() => {
-              increase({ id, reference, material, cost,photo, size });
+              increase({ id, reference, material, cost,photo, size,grams });
             }}
             variant="outlined"
             size="small"
@@ -134,17 +134,17 @@ const ProductCard = ({
             +1
             </Button>
             )}
-            {!isInCart({ id, reference, material, cost, photo, size }) && (
+            {!isInCart({ id, reference, material, cost, photo, size,grams }) && (
             <Button
             onClick={() => {
-            addToCart({ id, reference, material, cost, photo, size, amount });
+            addToCart({ id, reference, material, cost, photo, size, amount,grams });
             setAmount(0);
             }}
             variant="contained"
             size="small"
             startIcon={<AddShoppingCartOutlinedIcon />}
             >
-            comprar
+            Encomendar
             </Button>
             )}
             </Stack>
