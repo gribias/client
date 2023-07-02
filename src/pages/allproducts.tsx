@@ -34,7 +34,7 @@ useEffect(() => {
  } = useTable();
 
 const allProducts = useMemo(() => {
-  if (userEmail === 'gabriel.correia94@gmail.com') {
+  if (userEmail === 'gabrielcorreia94@gmail.com') {
     return data?.data ?? [];
   } else {
     return data?.data.filter((product) => product.userProduct === userEmail) ?? [];
@@ -124,17 +124,19 @@ const allProducts = useMemo(() => {
       </Box>
 
       <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <CustomButton
-          title="Add product"
-          handleClick={() =>
-            go({
-              to: "/products/create",
-            })
-          }
-          backgroundColor="#475be8"
-          color="#fcfcfc"
-          icon={<Add />}
-        ></CustomButton>
+      {userEmail === 'gabrielcorreia94@gmail.com' && (
+          <CustomButton
+            title="Add product"
+            handleClick={() =>
+              go({
+                to: "/products/create",
+              })
+            }
+            backgroundColor="#475be8"
+            color="#fcfcfc"
+            icon={<Add />}
+          />
+        )}
       </Stack>
 
       <Box mt="20px" sx={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
