@@ -57,4 +57,6 @@ export interface FormProps {
     handleImageChange: (file) => void,
     onFinishHandler: (data: FieldValues) => Promise<void> | void,
     productImage: { name: string, url: string },
+    control: Control,
+    
 }

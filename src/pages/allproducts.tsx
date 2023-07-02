@@ -37,7 +37,7 @@ const allProducts = useMemo(() => {
   if (userEmail === 'gabrielcorreia94@gmail.com') {
     return data?.data ?? [];
   } else {
-    return data?.data.filter((product) => product.userProduct === userEmail) ?? [];
+    return data?.data.filter((product) => product.userProduct.includes(userEmail)) ?? [];
   }
 }, [data, userEmail]);
 

@@ -13,7 +13,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
     email:string
   }>();
   const [productImage, setProductImage] = useState({ name:'', url: ''});
-  const { refineCore: {onFinish, formLoading}, register, handleSubmit} = useForm();
+  const { refineCore: {onFinish, formLoading}, register, handleSubmit,control} = useForm();
 
   const handleImageChange = (file: File) => {
     const reader = (readFile: File) =>
@@ -43,6 +43,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
     handleImageChange = {handleImageChange}
     onFinishHandler = {onFinishHandler}
     productImage={productImage}
+    control={control}
     />
     //<MuiCreateInferencer />;
   )
