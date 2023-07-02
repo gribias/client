@@ -173,6 +173,9 @@ function App() {
     },
   };
 
+  const user = localStorage.getItem("user");
+  const email = user ? JSON.parse(user).email : "";
+
   return (
     <BrowserRouter>
       <RefineKbarProvider>
@@ -203,6 +206,7 @@ function App() {
                     canDelete: true,
                   },
                 },
+                ...(email === "gabrielcorreia94@gmail.com" ? [
                 {
                   name: "orders",
                   list: allOrders,
@@ -214,6 +218,20 @@ function App() {
                     canDelete: true,
                   },
                 },
+              ]
+              : [
+                {
+                  name: "orders",
+                  //list: allOrders,
+                  // create: "/products/create",
+                  // edit: "/products/edit/:id",
+                  show: "/orders/show/:id",
+                  icon: <ShoppingBagOutlined />,
+                  meta: {
+                    canDelete: true,
+                  },
+                },
+              ]),
                 // {
                 //   name: "blog_posts",
                 //   list: "/blog-posts",
@@ -313,3 +331,7 @@ function App() {
 }
 
 export default App;
+function useAuth(): { user: any; } {
+  throw new Error("Function not implemented.");
+}
+
