@@ -148,7 +148,7 @@ const allProducts = useMemo(() => {
             material={product.material}
             cost={product.cost}
             photo={product.photo}
-            grams = {product.grams}
+            // grams = {product.grams}
           />
         ))}
       </Box>

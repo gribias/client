@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import {
     Grid,
     Box,
@@ -51,14 +51,14 @@ const { data: user } = useGetIdentity() as { data: { email: string } };
             order: "asc",
         },
     ],
-    filters:{initial: [
-        {
-            field: "creator",
-            operator: "eq",
-            value: user.email,
-        },
-    ],
-    },
+    // filters:{initial: [
+    //     {
+    //         field: "creator",
+    //         operator: "eq",
+    //         value: user.email,
+    //     },
+    // ],
+    // },
     resource: "orders",
     syncWithLocation: true,
 });
@@ -93,6 +93,67 @@ const columns = React.useMemo<GridColumns<IOrder>>(
         //     flex: 1,
         //     minWidth: 100,
         // },
+
+        {
+          field: "products",
+          headerName: "produtos",
+          headerAlign: "center",
+          align: "center",
+          sortable: false,
+          renderCell: function render({ row }) {
+              return (
+                <CustomTooltip
+                  arrow
+                  placement="top"
+                  title={
+                    <Stack sx={{ padding: "2px" }}>
+                      {row.products.map((product) => (
+                        <li id={product.product?._id} key={product.product?._id}>
+                          {product.product?.reference}
+                        </li>
+                      ))}
+                    </Stack>
+                  }
+                >
+                  <Typography sx={{ fontSize: "14px" }}>
+                    {row.products.length} artigos
+                  </Typography>
+                </CustomTooltip>
+              );
+            },
+            
+          flex: 1,
+          minWidth: 100,
+      },
+      {
+        field: "grams",
+        headerName: "Grams",
+        headerAlign: "center",
+        align: "center",
+        sortable: false,
+        renderCell: function render({ row }) {
+          if (!row.grams) {
+            return null;
+          }
+          console.log(row)
+          return (
+            <Box>
+            {Object.entries(row.grams).map(([type, value]) => {
+              if (value > 0) {
+                return (
+                  <Typography key={type} sx={{ fontSize: "14px" }}>
+                    {`${type}: ${value} gr`}
+                  </Typography>
+                );
+              }
+              return null;
+            })}
+          </Box>
+          );
+        },
+        flex: 1,
+        minWidth: 100,
+      },
         {
             field: "Total",
             headerName: "Total",
@@ -129,37 +190,7 @@ const columns = React.useMemo<GridColumns<IOrder>>(
         //     minWidth: 150,
         //     sortable: false,
         // },
-        {
-            field: "products",
-            headerName: "produtos",
-            headerAlign: "center",
-            align: "center",
-            sortable: false,
-            renderCell: function render({ row }) {
-                return (
-                  <CustomTooltip
-                    arrow
-                    placement="top"
-                    title={
-                      <Stack sx={{ padding: "2px" }}>
-                        {row.products.map((product) => (
-                          <li id={product.product?._id} key={product.product?._id}>
-                            {product.product?.reference}
-                          </li>
-                        ))}
-                      </Stack>
-                    }
-                  >
-                    <Typography sx={{ fontSize: "14px" }}>
-                      {row.products.length} artigos
-                    </Typography>
-                  </CustomTooltip>
-                );
-              },
-              
-            flex: 1,
-            minWidth: 100,
-        },
+       
         {
             field: "createdAt",
             headerName: "Data de criação",
@@ -240,11 +271,11 @@ const columns = React.useMemo<GridColumns<IOrder>>(
 //   });
 const { show } = useNavigation();
   return (
-      <div style={{ height: 400, width: "100%" }}>
+      <div style={{ height: 600, width: "100%" }}>
           <DataGrid
               {...dataGridProps}
               columns={columns}
-              pageSize={10}
+              pageSize={30}
               getRowId={getRowId}
               onRowClick={({ id }) => {
                 //show("orders",id);
@@ -255,7 +286,7 @@ const { show } = useNavigation();
                   
                 console.log(show)
               }}
-              rowsPerPageOptions={[10, 20, 50, 100]}
+              rowsPerPageOptions={[30, 40, 50, 100]}
               sx={{
                   ...dataGridProps.sx,
                   "& .MuiDataGrid-row": {

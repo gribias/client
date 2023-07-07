@@ -10,13 +10,21 @@ import {
   Select,
   MenuItem,
   Button,
-  SelectChangeEvent
+  SelectChangeEvent,
+  Checkbox,
+  FormControlLabel
 } from '@mui/material';
+
 
 import { FormProps } from 'interfaces/common';
 import { CustomButton } from './customButton';
 import { fontWeight } from '@mui/system';
 import { Controller } from 'react-hook-form';
+
+interface Material {
+  type: string;
+  grams: number;
+}
 
 const Form = ({
   type,
@@ -29,13 +37,35 @@ const Form = ({
   control
 }: FormProps) => {
   const [userProduct, setUserProduct] = useState([]);
+  const [material, setMaterials] = useState<Material[]>([
+    { type: 'Ouro', grams: 0 },
+    { type: 'Prata', grams: 0 }
+  ]);
 
-// ...
 
-const [selectedUserProduct, setSelectedUserProduct] = useState<string[]>([]);
+  const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
+  const [selectedUserProduct, setSelectedUserProduct] = useState<string[]>([]);
 
-// ...
+  const handleMaterialChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = event.target;
+    setSelectedMaterials(prevMaterials => {
+      if (checked) {
+        return [...prevMaterials, name];
+      } else {
+        return prevMaterials.filter(material => material !== name);
+      }
+    });
+  };
 
+  const handleGramsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setMaterials((prevMaterials) =>
+      prevMaterials.map((material) =>
+        material.type === name ? { ...material, grams: Number(value) } : material
+      )
+    );
+  };
+  
 
   useEffect(() => {
     // Fetch user IDs
@@ -126,32 +156,50 @@ const [selectedUserProduct, setSelectedUserProduct] = useState<string[]>([]);
             />
           </FormControl>
           <Stack direction="row" gap={4}>
-            <FormControl sx={{ flex: 1 }}>
-              <FormHelperText
-                sx={{
-                  fontWeight: 500,
-                  margin: '10px 0',
-                  fontSize: 16,
-                  color: '#11142d'
-                }}
-              >
-                Select Material type
-              </FormHelperText>
-              <Select
-                variant="outlined"
-                color="info"
-                required
-                inputProps={{
-                  'aria-label': 'Without label'
-                }}
-                defaultValue="Ag-prata"
-                {...register('material', { required: true })}
-              >
-                <MenuItem value="Ag-prata"> Prata</MenuItem>
-                <MenuItem value="Au-Ouro "> Ouro</MenuItem>
-                <MenuItem value="Au-Ag"> Ouro/Prata</MenuItem>
-              </Select>
-            </FormControl>
+          <Box>
+    {/* Your existing JSX code */}
+    <FormControl>
+  <FormHelperText
+    sx={{
+      fontWeight: 500,
+      margin: '10px',
+      fontSize: 16,
+      color: '#11142d'
+    }}
+  >
+    Select Material type
+  </FormHelperText>
+  {material.map((material) => (
+    <Stack key={material.type} direction="row" alignItems="center" gap={2}>
+      <Checkbox
+        name={material.type}
+        checked={selectedMaterials.includes(material.type)}
+        onChange={handleMaterialChange}
+      />
+      <Typography>{material.type}</Typography>
+      {selectedMaterials.includes(material.type) && (
+        <Controller
+          name={`material.${material.type}.grams`}
+          control={control}
+          defaultValue={0}
+          render={({ field }) => (
+            <TextField
+              fullWidth
+              required
+              id={material.type}
+              color="info"
+              type="number"
+              variant="outlined"
+              {...field}
+            />
+          )}
+        />
+      )}
+    </Stack>
+  ))}
+</FormControl>
+    {/* Rest of your JSX code */}
+  </Box>
             <FormControl>
               <FormHelperText
                 sx={{
@@ -189,28 +237,28 @@ const [selectedUserProduct, setSelectedUserProduct] = useState<string[]>([]);
                 Select User Email
               </FormHelperText>
               <Controller
-    name="userProduct"
-    control={control}
-    defaultValue={[]}
-    render={({ field }) => (
-      <Select
-        variant="outlined"
-        color="info"
-        required
-        inputProps={{
-          'aria-label': 'Without label'
-        }}
-        multiple
-        {...field}
-      >
-        {userProduct.map((id) => (
-          <MenuItem key={id} value={id}>
-            {id}
-          </MenuItem>
-        ))}
-      </Select>
-    )}
-  />
+                name="userProduct"
+                control={control}
+                defaultValue={[]}
+                render={({ field }) => (
+                  <Select
+                    variant="outlined"
+                    color="info"
+                    required
+                    inputProps={{
+                      'aria-label': 'Without label'
+                    }}
+                    multiple
+                    {...field}
+                  >
+                    {userProduct.map((id) => (
+                      <MenuItem key={id} value={id}>
+                        {id}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
             </FormControl>
           </Stack>
           <FormControl>

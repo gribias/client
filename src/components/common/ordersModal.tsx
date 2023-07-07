@@ -15,6 +15,7 @@ import { styled } from "@mui/material/styles";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import RemoveIcon from "@mui/icons-material/Remove";
 import DeleteIcon from '@mui/icons-material/Delete';
+import CloseIcon from "@mui/icons-material/Close";
 import CartContext from "contexts/Cart/CartContext";
 import React, { useContext, useState } from "react";
 import { useGetIdentity } from "@refinedev/core";
@@ -46,10 +47,11 @@ interface CartItemProps {
   item: {
     photo: string;
     reference: string;
-    material: string;
+    material: object;
     size: string;
     quantity: number;
     cost: number;
+    grams: number;
   };
   onDecrease: () => void;
   onDelete: (reference: string, size: string) => void;
@@ -61,12 +63,42 @@ const CartItem: React.FC<CartItemProps> = ({ item, onDecrease, onDelete }) => {
   const handleDelete = () => {
     onDelete(item.reference, item.size);
   };
+
+  console.log(item, "item")
   return (
     <ItemCard>
       <ItemImage src={item.photo} alt={item.reference} />
       <ItemDetails>
-        <Typography variant="body1"   textTransform="capitalize">{item.reference}</Typography>
-        <Typography variant="body2">tipo: {item.material}</Typography>
+      <div>
+  {Object.entries(item.material).map(([material, details]) => {
+    if (typeof details.grams === "number" && !isNaN(details.grams) && details.grams > 0) {
+      return (
+        <div key={material}>
+          <Typography variant="body2">
+            material: {material}
+          </Typography>
+          <Typography variant="body2">
+            grams: {details.grams}
+          </Typography>
+        </div>
+      );
+    } else if (typeof details.grams === "string" && !isNaN(parseFloat(details.grams)) && parseFloat(details.grams) > 0) {
+      return (
+        <div key={material}>
+          <Typography variant="body2">
+            material: {material}
+          </Typography>
+          <Typography variant="body2">
+            grams: {parseFloat(details.grams)}
+          </Typography>
+        </div>
+      );
+    }
+    return null;
+  })}
+</div>
+
+
         <Typography variant="body2">tamanho: {item.size}</Typography>
         <Typography variant="body2">Quantidade: {item.quantity}</Typography>
       </ItemDetails>
@@ -100,7 +132,7 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, open }) => {
     email: string;
   }>();
 
-  const { cartItems, clearCart, increase, decrease,removeFromCart, itemCount, handleCheckout } =
+  const { cartItems, clearCart, increase, decrease, removeFromCart, itemCount, handleCheckout } =
     useContext(CartContext);
 
   const [note, setNote] = useState(""); // State for storing the order note
@@ -110,7 +142,48 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, open }) => {
   const handleNoteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNote(e.target.value);
   };
+
+  // const getTotalGramsByMaterial = () => {
+  //   const gramsByMaterial: { [material: string]: number } = {};
+
+  //   for (const item of cartItems) {
+  //     const { material, grams } = item;
+
+  //     if (gramsByMaterial[material]) {
+  //       gramsByMaterial[material] += grams;
+  //     } else {
+  //       gramsByMaterial[material] = grams;
+  //     }
+  //   }
+  //   console.log(gramsByMaterial);
+  //   return gramsByMaterial;
+  // };
+
+  const getTotalGramsByMaterial = () => {
+    const gramsByMaterial: { [material: string]: number } = {};
   
+    cartItems.forEach((item) => {
+      Object.entries(item.material).forEach(([material, details]) => {
+        const grams =
+          typeof details.grams === "number"
+            ? details.grams
+            : parseFloat(details.grams) || 0;
+  
+        const quantity = item.quantity || 0;
+        const totalGrams = grams * quantity;
+  
+        if (totalGrams > 0) {
+          gramsByMaterial[material] = (gramsByMaterial[material] || 0) + totalGrams;
+        }
+      });
+    });
+  
+    return gramsByMaterial;
+  };
+  
+
+  const gramsByMaterial = getTotalGramsByMaterial();
+
   const checkout = (cartItems: any) => {
     return async () => {
       const response = await fetch("http://localhost:8080/api/v1/orders", {
@@ -125,6 +198,7 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, open }) => {
             0
           ),
           note: note, // Include the note in the request body
+         material: cartItems.material,
         }),
         headers: {
           "Content-Type": "application/json",
@@ -153,11 +227,21 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, open }) => {
       >
         <Card>
           <CardContent>
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <IconButton onClick={onClose}>
+                <CloseIcon />
+              </IconButton>
+            </Box>
             <Typography variant="h4">Encomendas</Typography>
             {cartItems.length > 0 ? (
               <>
                 {cartItems.map((item: any, index: number) => (
-                  <CartItem key={index} item={item} onDecrease={() => decrease(item)}  onDelete= {() => removeFromCart(item)}/>
+                  <CartItem
+                    key={index}
+                    item={item}
+                    onDecrease={() => decrease(item)}
+                    onDelete={() => removeFromCart(item)}
+                  />
                 ))}
                 <Stack
                   direction={isMobile ? "column" : "row"}
@@ -172,6 +256,11 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, open }) => {
                       0
                     )}
                   </Typography>
+                  {Object.entries(gramsByMaterial).map(([material, totalGrams]) => (
+    <Typography key={material} fontSize={14} color="#808191">
+      {material}: {totalGrams} gr
+    </Typography>
+  ))}
                   {/* Note input field */}
                   <TextField
                     label="Order Note"
@@ -187,6 +276,16 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, open }) => {
                   >
                     Finalizar
                   </Button>
+                </Stack>
+                {/* Display grams by material */}
+                <Stack direction="column" mt={2}>
+                  {/* <Typography fontSize={14} color="#808191">
+                    {cartItems.material.map((material: object) => (
+                      <span key={material.type}>
+                        {material.type}: {material.grams}
+                      </span>
+                    ))}
+                  </Typography> */}
                 </Stack>
               </>
             ) : (

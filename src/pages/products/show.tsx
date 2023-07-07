@@ -76,25 +76,29 @@ return (
           />
 
           <Box mt="15px">
-            <Stack>
-              <Typography
-                fontSize={18}
-                fontWeight={500}
-                color="#11142d"
-                textTransform="capitalize"
-              >
-                {productDetails.material}
-              </Typography>
-              <Typography
-                fontSize={14}
-                fontWeight={500}
-                color="#808191"
-                textTransform="capitalize"
-              >
-                Gramas: {productDetails.grams}
-              </Typography>
-                
-            </Stack>
+          <Stack>
+  {Object.entries(productDetails.material).map(([type, value]) => (
+    <Stack key={type} direction="row" alignItems="center" gap={2}>
+      <Typography
+        fontSize={18}
+        fontWeight={500}
+        color="#11142d"
+        textTransform="capitalize"
+      >
+        {type}
+      </Typography>
+      <Typography
+        fontSize={14}
+        fontWeight={500}
+        color="#808191"
+        textTransform="capitalize"
+      >
+        Gramas: {(value as { grams: number }).grams}
+      </Typography>
+    </Stack>
+  ))}
+</Stack>
+
 
             <Stack direction="row" justifyContent="space-between"
             flexWrap="wrap" alignItems="center" mt="10px"

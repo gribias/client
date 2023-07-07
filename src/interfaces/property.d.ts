@@ -15,14 +15,17 @@ export interface FormValues {
 }
 
 export interface PropertyCardProps {
-  id?: BaseKey | undefined,
-  reference: string,
-  material: string,
-  cost: number,
-  photo: string,
-  grams: number,
+  id?: BaseKey | undefined;
+  reference: string;
+  material: Material[];
+  cost: number;
+  photo: string;
 }
 
+interface Material {
+  type: string;
+  grams: number;
+}
 
 
 // export interface IOrder {
@@ -40,6 +43,7 @@ export interface PropertyCardProps {
 // }
 
 interface IOrder {
+  grams: { [type: string]:  number  };
   _id: string;
   user: string;
   orderDate: "string";
@@ -57,6 +61,11 @@ interface IOrder {
     valueOptions?: ValueOptions[]; 
   }[];
   creator: string;
+  material: {
+    [type: string]: {
+      grams: number;
+    };
+  };
   __v: number;
 }
 
