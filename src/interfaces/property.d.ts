@@ -51,7 +51,7 @@ interface IOrder {
   NumberArticles: number;
   Total: number;
   products: {
-    product: {
+    _id: {
       _id: string;
       reference: string;
       cost: number;

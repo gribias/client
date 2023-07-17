@@ -45,9 +45,10 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
   const { cartItems, itemCount } = useContext(CartContext);
   const [showModal, setShowModal] = useState(false);
 
-  const handleClickOpen = () => {
+  const handleModalOpen = (event: React.MouseEvent<HTMLDivElement>) => {
     setShowModal(true);
   };
+
 
   const handleModalClose = () => {
     setShowModal(false);
@@ -102,10 +103,10 @@ export const Header: React.FC<RefineThemedLayoutHeaderProps> = ({
               {mode === "dark" ? <LightModeOutlined /> : <DarkModeOutlined />}
             </IconButton> */}
             <div
-            onClick={handleClickOpen}
+            onClick={handleModalOpen}
             >
    {/* Show the modal if showModal is true */}
-   { <OrdersModal onClose={handleModalClose} open={showModal} />}
+   { <OrdersModal open={showModal} onClose={handleModalClose} setShowModal={setShowModal}/>}
             {cartItems.length > 0 && (
                  <Stack
                  direction="row"

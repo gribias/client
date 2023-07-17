@@ -19,7 +19,15 @@ import CloseIcon from "@mui/icons-material/Close";
 import CartContext from "contexts/Cart/CartContext";
 import React, { useContext, useState } from "react";
 import { useGetIdentity } from "@refinedev/core";
-
+import Dialog from '@mui/material/Dialog';
+import ListItemText from '@mui/material/ListItemText';
+import ListItem from '@mui/material/ListItem';
+import List from '@mui/material/List';
+import Divider from '@mui/material/Divider';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Slide from '@mui/material/Slide';
+import { TransitionProps } from '@mui/material/transitions';
 const ItemCard = styled(Card)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -127,7 +135,8 @@ interface OrdersModalProps {
   
 }
 
-export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, open }) => {
+export const OrdersModal: React.FC<OrdersModalProps & { setShowModal: React.Dispatch<React.SetStateAction<boolean>> }> = ({ onClose, open, setShowModal }) => {
+  console.log(open, "onClose")
   const { data: user } = useGetIdentity<{
     email: string;
   }>();
@@ -141,6 +150,12 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, open }) => {
 
   const handleNoteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNote(e.target.value);
+  };
+
+  const handleClose = () => {
+    setNote(""); // Clear the note state
+    onClose(); // Call the onClose function
+    setShowModal(false);
   };
 
   // const getTotalGramsByMaterial = () => {
@@ -212,7 +227,7 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, open }) => {
   };
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onClose={handleClose}>
       <Box
         sx={{
           position: "absolute",
@@ -228,7 +243,7 @@ export const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, open }) => {
         <Card>
           <CardContent>
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-              <IconButton onClick={onClose}>
+              <IconButton onClick={handleClose}>
                 <CloseIcon />
               </IconButton>
             </Box>

@@ -102,23 +102,24 @@ const columns = React.useMemo<GridColumns<IOrder>>(
           sortable: false,
           renderCell: function render({ row }) {
               return (
-                <CustomTooltip
-                  arrow
-                  placement="top"
-                  title={
-                    <Stack sx={{ padding: "2px" }}>
+                <Stack sx={{ padding: "2px" }}>
                       {row.products.map((product) => (
-                        <li id={product.product?._id} key={product.product?._id}>
-                          {product.product?.reference}
+                        <li id={product._id?._id} key={product._id?._id}>
+                          {product._id?.reference}
                         </li>
                       ))}
                     </Stack>
-                  }
-                >
-                  <Typography sx={{ fontSize: "14px" }}>
-                    {row.products.length} artigos
-                  </Typography>
-                </CustomTooltip>
+                // <CustomTooltip
+                //   arrow
+                //   placement="top"
+                //   title={
+                    
+                //   }
+                // >
+                //   <Typography sx={{ fontSize: "14px" }}>
+                //     {row.products.length} artigos
+                //   </Typography>
+                // </CustomTooltip>
               );
             },
             
